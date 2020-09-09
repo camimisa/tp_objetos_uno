@@ -30,5 +30,13 @@ public abstract class Actor {
 	public String toString() {
 		return "Actor [id=" + id + ", contacto=" + contacto + "]";
 	}
+	
+	public Ubicacion traerUbicacion() {
+		return contacto.getUbicacion();
+	}
+	
+	public abstract boolean validarIdentificadorUnico();
+
+	
 
 }

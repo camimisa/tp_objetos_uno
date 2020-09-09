@@ -1,5 +1,8 @@
 package almacenGranate;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Comercio extends Actor {
 
 	private String nombreComercio;
@@ -9,8 +12,8 @@ public class Comercio extends Actor {
 	private int diaDescuento;
 	private int porcentajeDescuentoDia;
 	private int porcentajeDescuentoEfectivo;
-	private DiaRetiro lstDiaRetiro;
-	private Carrito lstCarrito;
+	private List<DiaRetiro> lstDiaRetiro;
+	private List<Carrito> lstCarrito;
 
 	public Comercio(int id, Contacto contacto, String nombreComercio, long cuit, double costoFijo, double costoPorKm,
 			int diaDescuento, int porcentajeDescuentoDia, int porcentajeDescuentoEfectivo, DiaRetiro lstDiaRetiro,
@@ -23,8 +26,8 @@ public class Comercio extends Actor {
 		this.diaDescuento = diaDescuento;
 		this.porcentajeDescuentoDia = porcentajeDescuentoDia;
 		this.porcentajeDescuentoEfectivo = porcentajeDescuentoEfectivo;
-		this.lstDiaRetiro = lstDiaRetiro;
-		this.lstCarrito = lstCarrito;
+		this.lstDiaRetiro = new ArrayList<DiaRetiro>();
+		this.lstCarrito = new ArrayList<Carrito>();
 	}
 
 	public String getNombreComercio() {
@@ -33,6 +36,7 @@ public class Comercio extends Actor {
 
 	public void setNombreComercio(String nombreComercio) {
 		this.nombreComercio = nombreComercio;
+		this.nombreComercio="hola";
 	}
 
 	public long getCuit() {
@@ -83,19 +87,23 @@ public class Comercio extends Actor {
 		this.porcentajeDescuentoEfectivo = porcentajeDescuentoEfectivo;
 	}
 
-	public DiaRetiro getLstDiaRetiro() {
+	
+
+	
+
+	public List<DiaRetiro> getLstDiaRetiro() {
 		return lstDiaRetiro;
 	}
 
-	public void setLstDiaRetiro(DiaRetiro lstDiaRetiro) {
+	public void setLstDiaRetiro(List<DiaRetiro> lstDiaRetiro) {
 		this.lstDiaRetiro = lstDiaRetiro;
 	}
 
-	public Carrito getLstCarrito() {
+	public List<Carrito> getLstCarrito() {
 		return lstCarrito;
 	}
 
-	public void setLstCarrito(Carrito lstCarrito) {
+	public void setLstCarrito(List<Carrito> lstCarrito) {
 		this.lstCarrito = lstCarrito;
 	}
 
@@ -106,5 +114,18 @@ public class Comercio extends Actor {
 				+ porcentajeDescuentoDia + ", porcentajeDescuentoEfectivo=" + porcentajeDescuentoEfectivo
 				+ ", lstDiaRetiro=" + lstDiaRetiro + ", lstCarrito=" + lstCarrito + "]";
 	}
+
+	@Override
+	public boolean validarIdentificadorUnico() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	
+
+	
+	
+	
+	
 
 }
