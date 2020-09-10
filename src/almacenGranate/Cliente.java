@@ -1,5 +1,4 @@
 package almacenGranate;
-
 import java.util.regex.Pattern;
 
 public class Cliente extends Actor {
@@ -23,7 +22,6 @@ public class Cliente extends Actor {
 		if(!validarNombreApellido(apellido)) throw new Exception("ERROR. Apellido incorrecto");
 		this.apellido = apellido;
 	}
-
 	public String getNombre() {
 		return nombre;
 	}
@@ -41,7 +39,7 @@ public class Cliente extends Actor {
 		this.dni = dni;
 		//Validar dni espera un string para hacer la validacion, por eso lo tengo que castear.
 		if(!validarIdentificadorUnico()) throw new Exception("ERROR. Dni invalido");
-		
+
 	}
 
 	@Override
@@ -51,11 +49,12 @@ public class Cliente extends Actor {
 	
 	public boolean validarNombreApellido(String nombre) throws Exception {
 		//Retorna true si cumple con el siguiente patron: Solo letras mayusculas o minusculas de la a la z
-		return Pattern.matches("[a-zA-Z]+", nombre);
+		return Pattern.matches("^[a-zA-Z_]+$", nombre);
 	}
-	
+
+
 	@Override
-	public boolean validarIdentificadorUnico() {
+	protected boolean validarIdentificadorUnico() {
 		String auxDni = String.valueOf(dni);
 		//Retorna true si cumple con el siguiente patron: 7 u 8 numeros del 0 al 9
 				return Pattern.matches("[0-9]{7,8}", auxDni);

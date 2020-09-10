@@ -16,15 +16,18 @@ public class Carrito {
 	private List<ItemCarrito> lstItemCarrito;
 	private Entrega entrega;
 
-	public Carrito(int id, LocalDate fecha, LocalTime hora, boolean cerrado, double descuento, Cliente cliente,
-			ItemCarrito itemCarrito, Entrega entrega) {
+	public Carrito(int id, LocalDate fecha, LocalTime hora, boolean cerrado, double descuento, Cliente cliente, Entrega entrega) {
 		this.id = id;
 		this.fecha = fecha;
 		this.hora = hora;
 		this.cerrado = cerrado;
 		this.descuento = descuento;
 		this.cliente = cliente;
+
 		this.lstItemCarrito = new ArrayList<ItemCarrito>();
+
+		this.setLstItemCarrito(new ArrayList<ItemCarrito>());
+
 		this.entrega = entrega;
 	}
 
@@ -77,6 +80,7 @@ public class Carrito {
 	}
 
 
+
 	public List<ItemCarrito> getLstItemCarrito() {
 		return lstItemCarrito;
 	}
@@ -84,6 +88,7 @@ public class Carrito {
 	public void setLstItemCarrito(List<ItemCarrito> lstItemCarrito) {
 		this.lstItemCarrito = lstItemCarrito;
 	}
+
 
 	public Entrega getEntrega() {
 		return entrega;
@@ -93,9 +98,12 @@ public class Carrito {
 		this.entrega = entrega;
 	}
 
+	
+
 	@Override
 	public String toString() {
 		return "Carrito [id=" + id + ", fecha=" + fecha + ", hora=" + hora + ", cerrado=" + cerrado + ", descuento="
+
 				+ descuento + ", cliente=" + cliente + ", itemCarrito=" + lstItemCarrito + ", entrega=" + entrega + "]";
 	}
 	
@@ -139,6 +147,11 @@ public class Carrito {
 		}
 		
 		return descuentoMayor;
+
+				
+
 	}
 
+	
+	
 }

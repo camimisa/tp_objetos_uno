@@ -60,8 +60,20 @@ public class DiaRetiro {
 
 	@Override
 	public String toString() {
+
 		return "DiaRetiro [id=" + id + ", diaSemana=" + diaSemana + ", horaDesde=" + horaDesde + ", horaHasta="
 				+ horaHasta + ", intervalo=" + intervalo + "]";
 	}
 
+	public boolean equals(DiaRetiro diaRetiro) {
+		//TODO: elegir la opcion apropiada
+		/*
+		if( (this.diaSemana == diaRetiro.getDiaSemana()) && (this.horaDesde.equals(diaRetiro.getHoraDesde())) && 
+				(this.horaHasta.equals(diaRetiro.getHoraHasta())) && (this.intervalo == diaRetiro.getIntervalo()) )
+			return true;
+		*/
+		if(this.diaSemana == diaRetiro.getDiaSemana())
+				return true;
+		return false;
+	}
 }

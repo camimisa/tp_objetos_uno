@@ -34,9 +34,11 @@ public abstract class Actor {
 	public Ubicacion traerUbicacion() {
 		return contacto.getUbicacion();
 	}
-	
-	public abstract boolean validarIdentificadorUnico();
 
-	
+
+	protected abstract boolean validarIdentificadorUnico() throws Exception;
+
+
+
 
 }
