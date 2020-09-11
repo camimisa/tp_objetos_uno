@@ -31,7 +31,7 @@ public class Turno {
 		this.hora = hora;
 	}
 
-	public boolean isOcupado() {
+	public boolean getOcupado() {
 		return ocupado;
 	}
 
