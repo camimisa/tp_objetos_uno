@@ -115,11 +115,11 @@ public class Carrito {
 	public boolean agregar(Articulo articulo, int cantidad) {
 		Articulo articulo2 = articulo;
 		
-		for(ItemCarrito auxiliar:lstItemCarrito) {
-			if(auxiliar.getArticulo().equals(articulo2)) {
+		for(ItemCarrito auxiliar:lstItemCarrito) { 			// recorro la listaa
+			if(auxiliar.getArticulo().equals(articulo2)) {   // si el articulo ya existe en la lista le sumo 1 a la cantidad
 				auxiliar.setCantidad(auxiliar.getCantidad()+1);
 			}else {
-		ItemCarrito agregar= new ItemCarrito(articulo2,cantidad);
+		ItemCarrito agregar= new ItemCarrito(articulo2,cantidad);    // si no, lo  creo y agrego a la lista
 		lstItemCarrito.add(agregar);
 			}
 		}

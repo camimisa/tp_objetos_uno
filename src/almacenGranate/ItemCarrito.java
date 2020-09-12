@@ -32,7 +32,7 @@ public class ItemCarrito {
 	}
 
 	
-	
+	// se calcula el sub total (precio * cantidad)
 public double calcularSubTotal() {
 		double resultado=0;
 		resultado=articulo.getPrecio()*cantidad;

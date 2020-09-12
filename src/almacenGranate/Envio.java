@@ -73,9 +73,13 @@ public class Envio extends Entrega{
 	public void setCosto(Ubicacion ubicacion, double costoFijo, double costoPorKm) {
 		Cliente cliente;
 		Ubicacion ubicacion2=new Ubicacion(cliente.getContacto().getUbicacion().getLatitud(),cliente.getContacto().getUbicacion().getLongitud());
+		// uso la ubicacion de Cliente pero tengo que inicializarla para poder sacar el calculo de distancia
 		
 		this.ubicacion=ubicacion;
-		this.costo=(distanciaCoord(ubicacion.getLatitud(), ubicacion.getLongitud(), ubicacion2.getLatitud(), ubicacion2.getLongitud())*costoPorKm)+costoFijo;
+		
+	this.costo=(distanciaCoord(ubicacion.getLatitud(), ubicacion.getLongitud(), ubicacion2.getLatitud(), ubicacion2.getLongitud())*costoPorKm)+costoFijo;
+	// costo lo igualo el costo total del Costo fijo mas el costo de envio
+	
 	}
 	
 

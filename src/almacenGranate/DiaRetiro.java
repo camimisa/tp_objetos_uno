@@ -64,6 +64,7 @@ public class DiaRetiro {
 				+ horaHasta + ", intervalo=" + intervalo + "]";
 	}
 
+	// no sabemos donde va
 	
 	/*public LocalTime traerHoraRetiro(LocalTime fecha) {
 		
