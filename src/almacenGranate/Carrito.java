@@ -1,7 +1,9 @@
 package almacenGranate;
 
+
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 public class Carrito {
 
@@ -11,32 +13,40 @@ public class Carrito {
 	private boolean cerrado;
 	private double descuento;
 	private Cliente cliente;
-	private ItemCarrito itemCarrito;
+	private List<ItemCarrito> lstItemCarrito;
 	private Entrega entrega;
-
+	
+	
 	public Carrito(int id, LocalDate fecha, LocalTime hora, boolean cerrado, double descuento, Cliente cliente,
-			ItemCarrito itemCarrito, Entrega entrega) {
+			List<ItemCarrito> lstItemCarrito, Entrega entrega) {
+		super();
 		this.id = id;
 		this.fecha = fecha;
 		this.hora = hora;
 		this.cerrado = cerrado;
 		this.descuento = descuento;
 		this.cliente = cliente;
-		this.itemCarrito = itemCarrito;
+		this.lstItemCarrito = lstItemCarrito;
 		this.entrega = entrega;
 	}
 
+	
 	public int getId() {
 		return id;
 	}
+
+
 
 	public void setId(int id) {
 		this.id = id;
 	}
 
+
+
 	public LocalDate getFecha() {
 		return fecha;
 	}
+
 
 	public void setFecha(LocalDate fecha) {
 		this.fecha = fecha;
@@ -53,7 +63,6 @@ public class Carrito {
 	public boolean isCerrado() {
 		return cerrado;
 	}
-
 	public void setCerrado(boolean cerrado) {
 		this.cerrado = cerrado;
 	}
@@ -61,7 +70,6 @@ public class Carrito {
 	public double getDescuento() {
 		return descuento;
 	}
-
 	public void setDescuento(double descuento) {
 		this.descuento = descuento;
 	}
@@ -70,18 +78,16 @@ public class Carrito {
 		return cliente;
 	}
 
+
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
 	}
-
-	public ItemCarrito getItemCarrito() {
-		return itemCarrito;
+	public List<ItemCarrito> getLstItemCarrito() {
+		return lstItemCarrito;
 	}
-
-	public void setItemCarrito(ItemCarrito itemCarrito) {
-		this.itemCarrito = itemCarrito;
+	public void setLstItemCarrito(List<ItemCarrito> lstItemCarrito) {
+		this.lstItemCarrito = lstItemCarrito;
 	}
-
 	public Entrega getEntrega() {
 		return entrega;
 	}
@@ -90,10 +96,36 @@ public class Carrito {
 		this.entrega = entrega;
 	}
 
+
 	@Override
 	public String toString() {
 		return "Carrito [id=" + id + ", fecha=" + fecha + ", hora=" + hora + ", cerrado=" + cerrado + ", descuento="
-				+ descuento + ", cliente=" + cliente + ", itemCarrito=" + itemCarrito + ", entrega=" + entrega + "]";
+				+ descuento + ", cliente=" + cliente + ", lstItemCarrito=" + lstItemCarrito + ", entrega=" + entrega
+				+ "]";
 	}
 
+
+
+	public boolean equals(Carrito c) {
+		return ((id==c.getId())&&(fecha==c.getFecha())&&(hora==c.getHora())&&(cerrado==c.isCerrado()) &&(descuento==c.getDescuento())
+				&& (cliente==c.getCliente())&& (lstItemCarrito==c.getLstItemCarrito())&& (entrega==c.getEntrega()));
+	}
+
+
+	public boolean agregar(Articulo articulo, int cantidad) {
+		Articulo articulo2 = articulo;
+		
+		for(ItemCarrito auxiliar:lstItemCarrito) {
+			if(auxiliar.getArticulo().equals(articulo2)) {
+				auxiliar.setCantidad(auxiliar.getCantidad()+1);
+			}else {
+		ItemCarrito agregar= new ItemCarrito(articulo2,cantidad);
+		lstItemCarrito.add(agregar);
+			}
+		}
+		return true;
+		
+	}
+	
+	
 }

@@ -1,8 +1,7 @@
 package almacenGranate;
-
 import java.time.LocalDate;
 
-public abstract class Entrega {
+public  class Entrega {
 
 	protected int id;
 	protected LocalDate fecha;
