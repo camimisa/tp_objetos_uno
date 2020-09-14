@@ -2,6 +2,7 @@ package almacenGranate;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 public class RetiroLocal extends Entrega {
 
@@ -25,4 +26,12 @@ public class RetiroLocal extends Entrega {
 		return "RetiroLocal [horaEntrega=" + horaEntrega + "]";
 	}
 
+	public void setHoraEntrega(Comercio comercio, LocalDate fecha) {
+		List <Turno> listaTurnosLibres = comercio.traerTurnosLibres(fecha);
+		
+		this.horaEntrega = listaTurnosLibres.get(0).getHora();
+		listaTurnosLibres.get(0).setOcupado(true);
+		
+	}
+	
 }
