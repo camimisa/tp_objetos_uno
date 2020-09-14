@@ -1,6 +1,5 @@
 package test;
 
-
 import almacenGranate.Ubicacion;
 import almacenGranate.Cliente;
 import almacenGranate.Contacto;
