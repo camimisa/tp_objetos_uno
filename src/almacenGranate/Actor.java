@@ -35,7 +35,9 @@ public abstract class Actor {
 		return contacto.getUbicacion();
 	}
 
+
 	protected abstract boolean validarIdentificadorUnico() throws Exception;
+
 
 
 

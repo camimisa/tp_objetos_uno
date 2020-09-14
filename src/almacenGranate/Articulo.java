@@ -51,4 +51,11 @@ public class Articulo {
 		return "Articulo [id=" + id + ", nombre=" + nombre + ", codBarras=" + codBarras + ", precio=" + precio + "]";
 	}
 
+	public boolean equals(Articulo articulo) {
+		if(this.nombre == articulo.getNombre())
+			return true;
+		else 
+			return false;
+	}
+	
 }

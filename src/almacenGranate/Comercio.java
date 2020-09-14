@@ -190,12 +190,15 @@ public class Comercio extends Actor {
 		
 		List<Turno> agenda = new ArrayList<Turno>();
 		
+		//Guarda el turno de la primer hora del dia
 		LocalTime horaTurno = diaRetiro.getHoraDesde();
-		
+
+		//Uso long porque plusMinutes recibe un long
 		long minutosEntreTurnos = (long)diaRetiro.getIntervalo();
 		
 		for(int i=0; i<cantidadDeTurnos ; i++) {
-			agenda.add(new Turno(fecha,horaTurno,false));
+			Turno nuevoTurno = new Turno(fecha,horaTurno,false);
+			agenda.add(nuevoTurno);
 			horaTurno = horaTurno.plusMinutes(minutosEntreTurnos);
 		}
 		
@@ -207,8 +210,8 @@ public class Comercio extends Actor {
 		List <Turno> turnos = this.generarTurnosLibres(fecha);
 		Entrega entregaCarrito = null;
 		int i = 0;
-		List <Carrito> carritosFecha = this.traerCarritos(fecha);
 		// Trae los carritos que fueron comprados ese dia.
+		List <Carrito> carritosFecha = this.traerCarritos(fecha);
 		for(Carrito carrito: carritosFecha) {
 			entregaCarrito = carrito.getEntrega();
 			// Solo tienen turno los que se retiran en el local.
