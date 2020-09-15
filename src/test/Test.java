@@ -55,7 +55,8 @@ public class Test {
 		}catch(Exception e) {
 			System.out.println(e);
 		}
-			
+		
+					
 		// Creacion del comercio.
 		Ubicacion ubicacionComercio = new Ubicacion(20.1542,30.5468);
 		Contacto contactoComercio = new Contacto("almacen_granate@gmail.com","1134274702",ubicacionComercio);
