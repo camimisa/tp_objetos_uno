@@ -28,7 +28,21 @@ public class ItemCarrito {
 
 	@Override
 	public String toString() {
-		return "ItemCarrito [articulo=" + articulo + ", cantidad=" + cantidad + "]";
+		return articulo + "\t\t" + cantidad + "\t" + this.calcularSubTotal() + "\n";
 	}
 
+	public boolean equals(ItemCarrito itemCarrito) {
+		if( this.articulo.equals(itemCarrito.getArticulo()) && this.cantidad == itemCarrito.getCantidad() )
+			return true;
+		else 
+			return false;
+	}
+	
+	// se calcula el sub total (precio * cantidad)
+	public double calcularSubTotal() {
+		double resultado = 0;
+		resultado = articulo.getPrecio() * cantidad;
+		return resultado;
+	}
+	
 }

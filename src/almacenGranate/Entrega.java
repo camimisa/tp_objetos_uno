@@ -30,7 +30,7 @@ public abstract class Entrega {
 		this.fecha = fecha;
 	}
 
-	public boolean isEfectivo() {
+	public boolean getEfectivo() {
 		return efectivo;
 	}
 

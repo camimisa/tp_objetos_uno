@@ -48,7 +48,21 @@ public class Articulo {
 
 	@Override
 	public String toString() {
-		return "Articulo [id=" + id + ", nombre=" + nombre + ", codBarras=" + codBarras + ", precio=" + precio + "]";
+		
+		String espacios = "\t\t";
+		
+		if(nombre.length() > 7) {
+			espacios = "\t";
+		}
+		
+		return id + "\t" + nombre + "" + espacios + "" + precio + "\t" + codBarras;
 	}
 
+	public boolean equals(Articulo articulo) {
+		if(this.nombre == articulo.getNombre())
+			return true;
+		else 
+			return false;
+	}
+	
 }
