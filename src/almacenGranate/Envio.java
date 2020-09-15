@@ -4,26 +4,26 @@ import java.time.LocalTime;
 
 public class Envio extends Entrega{
 	
-	private LocalTime horasHasta;
+	private LocalTime horaHasta;
 	private LocalTime horaDesde;
 	private double costo;
 	private Ubicacion ubicacion;
 	
-	public Envio(int id, LocalDate fecha, boolean efectivo, LocalTime horasHasta, LocalTime horaDesde, double costo,
+	public Envio(int id, LocalDate fecha, boolean efectivo, LocalTime horaHasta, LocalTime horaDesde, double costo,
 			Ubicacion ubicacion) {
 		super(id, fecha, efectivo);
-		this.horasHasta = horasHasta;
+		this.horaHasta = horaHasta;
 		this.horaDesde = horaDesde;
 		this.costo = costo;
 		this.ubicacion = ubicacion;
 	}
 
-	public LocalTime getHorasHasta() {
-		return horasHasta;
+	public LocalTime getHoraHasta() {
+		return horaHasta;
 	}
 
-	public void setHorasHasta(LocalTime horasHasta) {
-		this.horasHasta = horasHasta;
+	public void setHoraHasta(LocalTime horaHasta) {
+		this.horaHasta = horaHasta;
 	}
 
 	public LocalTime getHoraDesde() {
@@ -52,7 +52,7 @@ public class Envio extends Entrega{
 
 	@Override
 	public String toString() {
-		return "Envio [horasHasta=" + horasHasta + ", horaDesde=" + horaDesde + ", costo=" + costo + ", ubicacion="
+		return "Envio [horasHasta=" + horaHasta + ", horaDesde=" + horaDesde + ", costo=" + costo + ", ubicacion="
 				+ ubicacion + "]";
 	}
 	
@@ -63,22 +63,17 @@ public class Envio extends Entrega{
 		double dLng = Math.toRadians(lng2 - lng1);
 		double sindLat = Math.sin(dLat / 2);
 		double sindLng = Math.sin(dLng / 2);
-		double va1 =Math.pow(sindLat, 2)+Math.pow(sindLng, 2)*Math.cos(Math.toRadians(lat1))*
-		Math.cos(Math.toRadians(lat2));
+		double va1 = Math.pow(sindLat, 2)+ Math.pow(sindLng, 2)*Math.cos(Math.toRadians(lat1))*
+						Math.cos(Math.toRadians(lat2));
 		double va2 = 2 * Math.atan2(Math.sqrt(va1), Math.sqrt(1 - va1));
 		return radioTierra * va2;
 		}
 
-	//TODO: ver donde ubicar este metodo. Se necesita al cliente.
 	public void setCosto(Ubicacion ubicacion, double costoFijo, double costoPorKm) {
-		Cliente cliente = null;
-		Ubicacion ubicacion2=new Ubicacion(cliente.getContacto().getUbicacion().getLatitud(),cliente.getContacto().getUbicacion().getLongitud());
-		// uso la ubicacion de Cliente pero tengo que inicializarla para poder sacar el calculo de distancia
-
-		this.ubicacion=ubicacion;
-
-	this.costo=(distanciaCoord(ubicacion.getLatitud(), ubicacion.getLongitud(), ubicacion2.getLatitud(), ubicacion2.getLongitud())*costoPorKm)+costoFijo;
-	// costo lo igualo el costo total del Costo fijo mas el costo de envio
+		// costo lo igualo el costo total del Costo fijo mas el costo de envio
+		double costoDistancia = this.distanciaCoord(ubicacion.getLatitud(), ubicacion.getLongitud(), 
+				this.ubicacion.getLatitud(), this.ubicacion.getLongitud());
+		this.costo=(costoDistancia*costoPorKm) + costoFijo;
 
 	}
 

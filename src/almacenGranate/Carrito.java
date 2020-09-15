@@ -16,6 +16,7 @@ public class Carrito {
 	private List<ItemCarrito> lstItemCarrito;
 	private Entrega entrega;
 
+	// TODO: entrega no deberia mandarse por parametro.
 	public Carrito(int id, LocalDate fecha, LocalTime hora, boolean cerrado, double descuento, Cliente cliente, Entrega entrega) {
 		this.id = id;
 		this.fecha = fecha;
@@ -96,9 +97,12 @@ public class Carrito {
 
 	@Override
 	public String toString() {
-		return "Carrito [id=" + id + ", fecha=" + fecha + ", hora=" + hora + ", cerrado=" + cerrado + ", descuento="
-
-				+ descuento + ", cliente=" + cliente + ", itemCarrito=" + lstItemCarrito + ", entrega=" + entrega + "]";
+		
+		String texto = "Carrino nº " + id + " fecha: " + fecha + " " + hora + "\nCliente: " + cliente +
+				"\nPRODUCTOS:\nID\tNOMBRE\t\tPRECIO  CODBARRAS  CANTIDAD  SUBTOTAL\n" + lstItemCarrito.toString().replace("[","").replace("]","").replace(",", "").replace(" ", "")+ 
+				"\nTotal: " + this.calcularTotal() + "\nDecuento: " + this.descuento + "\nTotal a pagar: " + this.totalAPagarCarrito(); 
+		
+		return texto;
 	}
 	
 	public boolean equals(Carrito c) {
@@ -106,88 +110,108 @@ public class Carrito {
 				&& (cliente==c.getCliente())&& (lstItemCarrito==c.getLstItemCarrito())&& (entrega==c.getEntrega()));
 	}
 
-	public boolean agregarItemCarrito(Articulo articulo, int cantidad) throws Exception {
-		int id;
+	private int traerPosicionArticulo(Articulo articulo) {
+		int posicion = -1;
+		int i = 0;
 		
-		if(lstItemCarrito.isEmpty()) {
-			id = 0;
-	
-			}else {
-				id = lstItemCarrito.get(lstItemCarrito.size() -1).getArticulo().getId();
-				id++;
+		while( (i<lstItemCarrito.size()) && (posicion == -1) ) {
+			if(lstItemCarrito.get(i).getArticulo().equals(articulo)){
+				posicion = i;
 			}
-		
-		for (ItemCarrito i : lstItemCarrito) {
-			if(i.getArticulo().getNombre().equalsIgnoreCase(articulo.getNombre())) {
-				throw new Exception("Error. Articulo repetido");
-			}
-			
+			i++;
 		}
 		
-		return lstItemCarrito.add(new ItemCarrito(articulo, cantidad));
+		return posicion;
 	}
 	
-	/* TODO: si encuentra el archivo lo elimina directamente o disminuye una cantidad?
-	 * Cambiar bucle for por while
-	 * */
+	private int traerPosicionArticulo(int id) {
+		int posicion = -1;
+		int i = 0;
+		
+		while( (i<lstItemCarrito.size()) && (posicion == -1) ) {
+			if(lstItemCarrito.get(i).getArticulo().getId() == id){
+				posicion = i;
+			}
+			i++;
+		}
+		
+		return posicion;
+	}
+	
+	public boolean agregar(Articulo articulo, int cantidad) throws Exception {
+		
+		if (cantidad < 1)
+			throw new Exception("ERROR. Cantidad NO valida.");
+		
+		int posicion = this.traerPosicionArticulo(articulo);
+		ItemCarrito itemCarrito = new ItemCarrito(articulo,cantidad);
+		int cantidadAux = 0;
+		
+		if( posicion == -1 ) {
+			lstItemCarrito.add(itemCarrito);
+		}
+		else {
+			cantidadAux = lstItemCarrito.get(posicion).getCantidad();
+			lstItemCarrito.get(posicion).setCantidad(cantidadAux + cantidad);
+		}
+		
+		return true;
+	}
+	
+	
+	// TODO: si encuentra el archivo lo elimina directamente o disminuye una cantidad?
 	public boolean eliminarItemCarrito(Articulo articulo) throws Exception{
-		boolean bandera = true;
+		int posicion = this.traerPosicionArticulo(articulo);
 		
-		for (ItemCarrito i : lstItemCarrito) {
-			if(i.getArticulo().getNombre().contentEquals(articulo.getNombre())) {
-				lstItemCarrito.remove(i);
-				bandera = false;
-			}
+		if(posicion == -1) {
+			throw new Exception("ERROR. Nombre del articulo incorrecto.");
 		}
 		
-		if(bandera) {
-			throw new Exception("Error nombre del Articulo incorrecto");
+		if( lstItemCarrito.get(posicion).getCantidad() == 1 ) {
+			lstItemCarrito.remove(posicion);
 		}
-		
+		else {
+			lstItemCarrito.get(posicion).setCantidad(lstItemCarrito.get(posicion).getCantidad() - 1 );
+		}
+
 		return true;
 	}
 	
-	public boolean modificaritemCarrito(int id, int cantidad) throws Exception{
-		boolean bandera = true;
+	public boolean modificarItemCarrito(int id, int cantidad) throws Exception{
 		
-		for (ItemCarrito i : lstItemCarrito) {
-			if(i.getArticulo().getId() == id) {
-				if(i.getCantidad() == cantidad) {
-					lstItemCarrito.remove(i);
-				}
-				if(i.getCantidad() > cantidad) {
-					int nuevaCantidad = i.getCantidad() - cantidad;
-					i.setCantidad(nuevaCantidad);
-				}
-				bandera = false;
-			}
+		if (cantidad < 1)
+			throw new Exception("ERROR. Cantidad NO valida.");
+		
+		int posicion = this.traerPosicionArticulo(id);
+		
+		if(posicion == -1) {
+			throw new Exception("ERROR. Articulo incorrecto.");
 		}
-		if(bandera) throw new Exception("Error id no encontrada");
 		
-		
-		return true;
-	}
-	
-	// TODO: cambiar bucle for por bucle while
-	public boolean agregar(Articulo articulo, int cantidad) {
-		Articulo articulo2 = articulo;
-
-		for(ItemCarrito auxiliar:lstItemCarrito) { 			// recorro la listaa
-			if(auxiliar.getArticulo().equals(articulo2)) {   // si el articulo ya existe en la lista le sumo 1 a la cantidad
-				auxiliar.setCantidad(auxiliar.getCantidad()+1);
-			}else {
-		ItemCarrito agregar= new ItemCarrito(articulo2,cantidad);    // si no, lo  creo y agrego a la lista
-		lstItemCarrito.add(agregar);
-			}
+		if( lstItemCarrito.get(posicion).getCantidad() == 1 ) {
+			lstItemCarrito.remove(posicion);
 		}
-		return true;
+		else {
+			lstItemCarrito.get(posicion).setCantidad(cantidad);
+		}
 
+		return true;
 	}
 	
 	public double calcularTotal() {
 		double total=0;
 		for (ItemCarrito item : lstItemCarrito) {
 			total += item.calcularSubTotal();
+		}
+		
+		return total;
+	}
+	
+	public double totalAPagarCarrito() {
+		double total = this.calcularTotal() - this.descuento;
+		
+		if(entrega instanceof Envio) {
+			total += ((Envio) entrega).getCosto();
 		}
 		
 		return total;
@@ -212,8 +236,13 @@ public class Carrito {
 	}
 
 	public double calcularDescuentoEfectivo(double porcentajeDescuentoEfectivo) {
-		//Calculo el total del carrito para luego aplicarle el descuento
-		return this.calcularTotal()*porcentajeDescuentoEfectivo/100;
+		
+		double descuento = 0;
+		//Calculo el total del carrito para luego aplicarle el descuento si el cliente paga con efectivo.
+		if(this.entrega.getEfectivo())
+			descuento = this.calcularTotal()*porcentajeDescuentoEfectivo/100;
+	
+		return descuento;
 	}
 	
 	public double calcularDescuentoCarrito(int diaDescuento,double porcentajeDescuento,double porcentajeDescuentoEfectivo) {
@@ -224,6 +253,9 @@ public class Carrito {
 		if(descuentoEfectivo > descuentoDia) {
 			descuentoMayor = descuentoEfectivo;
 		}
+		
+		//TODO: no se si esto va aca
+		this.setDescuento(descuentoMayor);
 		
 		return descuentoMayor;
 	}
