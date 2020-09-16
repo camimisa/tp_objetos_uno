@@ -22,6 +22,8 @@ public class Test {
 		
 		// Test de usuarios
 		
+		String separacionPrueba = "\n-------------------------------------\n";
+		
 		Ubicacion ubicacion = new Ubicacion(168.5,850.21);
 		
 		try {
@@ -81,13 +83,23 @@ public class Test {
 				
 		Carrito carritoUno = comercio.traerCarrito(comercio.getLstCarrito().get(0).getId());
 				
-		System.out.println(carritoUno);
-				
-		comercio.agregarDiaRetiro(3,LocalTime.parse("16:00"), LocalTime.parse("20:00"),30);
-				
-		System.out.println(comercio.generarAgenda(LocalDate.parse("2020-09-02")));
-				
-		// carrito -> agregar items. 
+		 carritoUno.agregar(listaArticulos.get(2), 2);
+		 carritoUno.agregar(listaArticulos.get(3), 2);
+		 carritoUno.agregar(listaArticulos.get(0), 1);
+		 
+		 System.out.println(carritoUno);
+		 
+		 carritoUno.agregar(listaArticulos.get(2), 3);
+		 
+		 System.out.println(separacionPrueba);
+		 
+		 carritoUno.eliminarItemCarrito(listaArticulos.get(2));
+		 
+		 carritoUno.modificarItemCarrito(2, 7);
+		 
+		 carritoUno.eliminarItemCarrito(listaArticulos.get(0));
+		 
+		 System.out.println(carritoUno);
 	
 		
 	}
