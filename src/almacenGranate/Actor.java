@@ -38,7 +38,4 @@ public abstract class Actor {
 
 	protected abstract boolean validarIdentificadorUnico() throws Exception;
 
-
-
-
 }

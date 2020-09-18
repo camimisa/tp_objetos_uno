@@ -156,18 +156,7 @@ public class Comercio extends Actor {
 				Character.getNumericValue(segundaParte.charAt(2)) * 7 + Character.getNumericValue(segundaParte.charAt(3)) * 6 + Character.getNumericValue(segundaParte.charAt(4)) * 5 + Character.getNumericValue(segundaParte.charAt(5)) * 4 +
 				Character.getNumericValue(segundaParte.charAt(6)) * 3 + Character.getNumericValue(segundaParte.charAt(7)) * 2 ;
 		
-		suma = suma%11;
-		
-		switch(suma) {
-		case 0: ultimoNumero = 0;
-		break;
-		case 1: 
-			//TODO: no se q poner en este caso si es empresa
-		break;
-		default:
-			ultimoNumero = 11 - suma;
-		break;
-		}
+		ultimoNumero = 11 - suma%11;
 		
 		if(Character.getNumericValue(tercerParte) != ultimoNumero) {
 			
@@ -218,7 +207,7 @@ public class Comercio extends Actor {
 			if(entregaCarrito instanceof RetiroLocal) {
 				// Se chequea esto para que no haya una excepcion.
 				if (i < turnos.size()) {
-					// Si la hora del retiro en el local es igual a uno de los horarios disponibles para retirar
+					// Si la hora del retiro en el local es igual a uno de los horarios disponibles para retirar.
 					// entonces ese turno esta ocupado.
 					if(((RetiroLocal) entregaCarrito).getHoraEntrega() == turnos.get(i).getHora()) {
 						turnos.get(i).setOcupado(true);
@@ -346,11 +335,12 @@ public class Comercio extends Actor {
 		
 	}
 	
-	public boolean agregarCarrito(LocalDate fecha, LocalTime hora, boolean cerrado, double descuento, Cliente cliente,
+	public boolean agregarCarrito(LocalDate fecha, LocalTime hora, double descuento, Cliente cliente,
 			Entrega entrega) throws Exception {
-		Carrito nuevoCarrito = new Carrito(getIdCarrito(), fecha, hora,cerrado,descuento,cliente,entrega);
+		Carrito nuevoCarrito = new Carrito(getIdCarrito(), fecha, hora,descuento,cliente,entrega);
 		
 		if(this.carritoExiste(nuevoCarrito) == -1) {
+			nuevoCarrito.setComercio(this);
 			this.lstCarrito.add(nuevoCarrito);
 		}
 		else {

@@ -15,13 +15,14 @@ public class Carrito {
 	private Cliente cliente;
 	private List<ItemCarrito> lstItemCarrito;
 	private Entrega entrega;
+	private Comercio comercio;
 
 	// TODO: entrega no deberia mandarse por parametro.
-	public Carrito(int id, LocalDate fecha, LocalTime hora, boolean cerrado, double descuento, Cliente cliente, Entrega entrega) {
+	public Carrito(int id, LocalDate fecha, LocalTime hora, double descuento, Cliente cliente, Entrega entrega) {
 		this.id = id;
 		this.fecha = fecha;
 		this.hora = hora;
-		this.cerrado = cerrado;
+		this.cerrado = false;
 		this.descuento = 0;
 		this.cliente = cliente;
 		this.lstItemCarrito = new ArrayList<ItemCarrito>();
@@ -95,12 +96,27 @@ public class Carrito {
 		this.entrega = entrega;
 	}
 
+	public Comercio getComercio() {
+		return comercio;
+	}
+
+	public void setComercio(Comercio comercio) {
+		this.comercio = comercio;
+	}
+	
 	@Override
 	public String toString() {
 		
 		String texto = "Carrino nº " + id + " fecha: " + fecha + " " + hora + "\nCliente: " + cliente +
 				"\nPRODUCTOS:\nID\tNOMBRE\t\tPRECIO  CODBARRAS  CANTIDAD  SUBTOTAL\n" + lstItemCarrito.toString().replace("[","").replace("]","").replace(",", "").replace(" ", "")+ 
 				"\nTotal: " + this.calcularTotal() + "\nDecuento: " + this.descuento + "\nTotal a pagar: " + this.totalAPagarCarrito(); 
+		
+		if(entrega instanceof Envio) {
+			texto += "\n(Costo de envio: " + ((Envio) entrega).getCosto() + ")";
+		}
+		else {
+			texto += "\n\n\tHora de retiro: " + ((RetiroLocal) entrega).getHoraEntrega();
+		}
 		
 		return texto;
 	}
@@ -110,6 +126,15 @@ public class Carrito {
 				&& (cliente==c.getCliente())&& (lstItemCarrito==c.getLstItemCarrito())&& (entrega==c.getEntrega()));
 	}
 
+	private boolean verificarCarritoAbierto() throws Exception {
+		if (!this.cerrado) {
+			return true;
+		}
+		else {
+			throw new Exception ("ERROR. Este pedido esta cerrado.");
+		}
+	}
+	
 	private int traerPosicionArticulo(Articulo articulo) {
 		int posicion = -1;
 		int i = 0;
@@ -140,6 +165,8 @@ public class Carrito {
 	
 	public boolean agregar(Articulo articulo, int cantidad) throws Exception {
 		
+		this.verificarCarritoAbierto();
+		
 		if (cantidad < 1)
 			throw new Exception("ERROR. Cantidad NO valida.");
 		
@@ -163,6 +190,8 @@ public class Carrito {
 	public boolean eliminarItemCarrito(Articulo articulo) throws Exception{
 		int posicion = this.traerPosicionArticulo(articulo);
 		
+		this.verificarCarritoAbierto();
+		
 		if(posicion == -1) {
 			throw new Exception("ERROR. Nombre del articulo incorrecto.");
 		}
@@ -178,6 +207,8 @@ public class Carrito {
 	}
 	
 	public boolean modificarItemCarrito(int id, int cantidad) throws Exception{
+		
+		this.verificarCarritoAbierto();
 		
 		if (cantidad < 1)
 			throw new Exception("ERROR. Cantidad NO valida.");
@@ -211,8 +242,14 @@ public class Carrito {
 		double total = this.calcularTotal() - this.descuento;
 		
 		if(entrega instanceof Envio) {
+			((Envio) entrega).setCosto(comercio.getContacto().getUbicacion(),comercio.getCostoFijo(),comercio.getCostoPorKm());
 			total += ((Envio) entrega).getCosto();
 		}
+		else {
+			((RetiroLocal) entrega).setHoraEntrega(hora);
+		}
+		
+		this.setCerrado(true);
 		
 		return total;
 	}
@@ -259,5 +296,19 @@ public class Carrito {
 		
 		return descuentoMayor;
 	}
+	/*
+	private Comercio comercio;
 	
+	public void setHoraEntrega(LocalDate fecha) {
+		List <Turno> listaTurnosLibres = comercio.traerTurnosLibres(fecha);
+		
+		if(entrega instanceof RetiroLocal) {
+			((RetiroLocal) entrega).setHoraEntrega(listaTurnosLibres.get(0).getHora());
+		}
+
+		listaTurnosLibres.get(0).setOcupado(true);
+		
+	}
+	*/
+
 }

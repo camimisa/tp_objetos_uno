@@ -8,9 +8,9 @@ public class RetiroLocal extends Entrega {
 
 	private LocalTime horaEntrega;
 
-	public RetiroLocal(int id, LocalDate fecha, boolean efectivo, LocalTime horaEntrega) {
+	// Elimine el hora entrega del constuctor porque eso se asigna cuando se cierra el carrito.
+	public RetiroLocal(int id, LocalDate fecha, boolean efectivo) {
 		super(id, fecha, efectivo);
-		this.horaEntrega = horaEntrega;
 	}
 
 	public LocalTime getHoraEntrega() {

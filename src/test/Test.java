@@ -3,6 +3,9 @@ package test;
 import almacenGranate.Ubicacion;
 import almacenGranate.Cliente;
 import almacenGranate.Contacto;
+import almacenGranate.Entrega;
+import almacenGranate.Envio;
+import almacenGranate.RetiroLocal;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -58,9 +61,9 @@ public class Test {
 		}
 			
 		// Creacion del comercio.
-		Ubicacion ubicacionComercio = new Ubicacion(20.1542,30.5468);
+		Ubicacion ubicacionComercio = new Ubicacion(-34.815658, -58.457143);
 		Contacto contactoComercio = new Contacto("almacen_granate@gmail.com","1134274702",ubicacionComercio);
-		Comercio comercio = new Comercio(0, contactoComercio, "almacen granate", 30111111118L, 150.0, 50.0, 3, 15, 20);
+		Comercio comercio = new Comercio(0, contactoComercio, "almacen granate", 30111111118L, 150.0, 15.0, 3, 15, 20);
 				
 		// Lista para almacenar todos los articulos del comercio
 		List <Articulo> listaArticulos = new ArrayList<Articulo>();
@@ -75,11 +78,18 @@ public class Test {
 		listaArticulos.add(new Articulo(listaArticulos.size(),"Manteca","11211",90.0));
 				
 		Cliente clienteUno = new Cliente(listaClientes.size(),new Contacto("cliente_uno@gmail.com","1134274702",
-							new Ubicacion(20.0,45.0)),"Garcia","Camila",43182591);
+							new Ubicacion(-34.803349, -58.448702)),"Garcia","Camila",43182591);
 		
 		listaClientes.add(clienteUno);
-			
-		comercio.agregarCarrito(LocalDate.parse("2020-09-09"), LocalTime.parse("18:09"), false, 0, clienteUno, null);
+		
+		// Probando entrega de tipo envio
+		Entrega entregaEnvio = new Envio(0,LocalDate.parse("2020-09-09"),true,LocalTime.parse("18:00"),
+				LocalTime.parse("20:00"), clienteUno.getContacto().getUbicacion());
+		
+		// Probando entrega de tipo envio
+		Entrega entregaRetiroLocal = new RetiroLocal(0,LocalDate.parse("2020-09-09"),true);
+		
+		comercio.agregarCarrito(LocalDate.parse("2020-09-09"), LocalTime.parse("18:09"), 0, clienteUno, entregaRetiroLocal);
 				
 		Carrito carritoUno = comercio.traerCarrito(comercio.getLstCarrito().get(0).getId());
 				
@@ -87,8 +97,11 @@ public class Test {
 		 carritoUno.agregar(listaArticulos.get(3), 2);
 		 carritoUno.agregar(listaArticulos.get(0), 1);
 		 
+		 // al imprimir todo el contenido del carrito uno se cierra el pedido.
 		 System.out.println(carritoUno);
 		 
+		 // prueba de modificar cosas despues de que se cerro el pedido:
+		 /*
 		 carritoUno.agregar(listaArticulos.get(2), 3);
 		 
 		 System.out.println(separacionPrueba);
@@ -98,9 +111,8 @@ public class Test {
 		 carritoUno.modificarItemCarrito(2, 7);
 		 
 		 carritoUno.eliminarItemCarrito(listaArticulos.get(0));
+		 */
 		 
-		 System.out.println(carritoUno);
-	
 		
 	}
 
