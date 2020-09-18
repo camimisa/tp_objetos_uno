@@ -63,17 +63,16 @@ public class Test {
 		Contacto contactoComercio = new Contacto("almacen_granate@gmail.com","1134274702",ubicacionComercio);
 		Comercio comercio = new Comercio(0, contactoComercio, "almacen granate", 30111111118L, 150.0, 50.0, 3, 15, 20);
 				
-		// Lista para almacenar todos los articulos del comercio
-		List <Articulo> listaArticulos = new ArrayList<Articulo>();
+		
 				
 		// Lista para almacenar los clientes que van comprando en el comercio.
 		List <Cliente> listaClientes = new ArrayList<Cliente>();
 				
-		listaArticulos.add(new Articulo(listaArticulos.size(),"Huevos","11111",20.0));
-		listaArticulos.add(new Articulo(listaArticulos.size(),"Pescado","21111",80.0));
-		listaArticulos.add(new Articulo(listaArticulos.size(),"Arroz","13111",30.0));
-		listaArticulos.add(new Articulo(listaArticulos.size(),"Pan lactal","11311",100.0));
-		listaArticulos.add(new Articulo(listaArticulos.size(),"Manteca","11211",90.0));
+		comercio.agregarArticulo("Huevos", "11111", 20.0);
+		comercio.agregarArticulo("Pescado", "21111", 80.0);
+		comercio.agregarArticulo("Arroz", "13111", 30.0);
+		comercio.agregarArticulo("Pan lactal", "11311", 100.0);
+		comercio.agregarArticulo("Manteca", "11211", 90.0);
 				
 		Cliente clienteUno = new Cliente(listaClientes.size(),new Contacto("cliente_uno@gmail.com","1134274702",
 							new Ubicacion(20.0,45.0)),"Garcia","Camila",43182591);
@@ -84,23 +83,30 @@ public class Test {
 				
 		Carrito carritoUno = comercio.traerCarrito(comercio.getLstCarrito().get(0).getId());
 				
-		 carritoUno.agregar(listaArticulos.get(2), 2);
-		 carritoUno.agregar(listaArticulos.get(3), 2);
-		 carritoUno.agregar(listaArticulos.get(0), 1);
+		 carritoUno.agregar(comercio.traerArticulo(1), 2);
+		 carritoUno.agregar(comercio.traerArticulo(2), 3);
+		 carritoUno.agregar(comercio.traerArticulo(3), 5);
+		 ///*ERROR. cantidad no valida:*/ carritoUno.agregar(comercio.traerArticulo(3), -4);
 		 
 		 System.out.println(carritoUno);
 		 
-		 carritoUno.agregar(listaArticulos.get(2), 3);
+		 carritoUno.agregar(comercio.traerArticulo(4), 3);
 		 
 		 System.out.println(separacionPrueba);
 		 
-		 carritoUno.eliminarItemCarrito(listaArticulos.get(2));
+		 carritoUno.eliminarItemCarrito(comercio.traerArticulo(4));
+		 
+		
 		 
 		 carritoUno.modificarItemCarrito(2, 7);
 		 
-		 carritoUno.eliminarItemCarrito(listaArticulos.get(0));
+		 //carritoUno.eliminarItemCarrito(listaArticulos.get(0));
 		 
 		 System.out.println(carritoUno);
+		 
+		 
+		 //comercio.eliminarArticulo(2);
+		//System.out.println(comercio.traerArticulo(2));
 	
 		
 	}

@@ -17,6 +17,7 @@ public class Comercio extends Actor {
 	private int porcentajeDescuentoEfectivo;
 	private List<DiaRetiro> lstDiaRetiro;
 	private List<Carrito> lstCarrito;
+	private List<Articulo> lstArticulo;
 
 	public Comercio(int id, Contacto contacto, String nombreComercio, long cuit, double costoFijo, double costoPorKm,
 			int diaDescuento, int porcentajeDescuentoDia, int porcentajeDescuentoEfectivo) throws Exception {
@@ -30,6 +31,7 @@ public class Comercio extends Actor {
 		this.porcentajeDescuentoEfectivo = porcentajeDescuentoEfectivo;
 		this.lstDiaRetiro = new ArrayList<DiaRetiro>();
 		this.lstCarrito = new ArrayList<Carrito>();
+		this.lstArticulo = new ArrayList<Articulo>();
 	}
 
 	public String getNombreComercio() {
@@ -105,13 +107,22 @@ public class Comercio extends Actor {
 	public void setLstCarrito(List<Carrito> lstCarrito) {
 		this.lstCarrito = lstCarrito;
 	}
+	
+
+	public List<Articulo> getLstArticulo() {
+		return lstArticulo;
+	}
+
+	public void setLstArticulo(List<Articulo> lstArticulo) {
+		this.lstArticulo = lstArticulo;
+	}
 
 	@Override
 	public String toString() {
 		return "Comercio [nombreComercio=" + nombreComercio + ", cuit=" + cuit + ", costoFijo=" + costoFijo
 				+ ", costoPorKm=" + costoPorKm + ", diaDescuento=" + diaDescuento + ", porcentajeDescuentoDia="
 				+ porcentajeDescuentoDia + ", porcentajeDescuentoEfectivo=" + porcentajeDescuentoEfectivo
-				+ ", lstDiaRetiro=" + lstDiaRetiro + ", lstCarrito=" + lstCarrito + "]";
+				+ ", lstDiaRetiro=" + lstDiaRetiro + ", lstCarrito=" + lstCarrito + ",lstArticulo="+ lstArticulo +"]";
 	}
 
 	// --------------------------------------TP---------------------------------------
@@ -417,21 +428,79 @@ public class Comercio extends Actor {
 		
 	}
 	
-	public boolean modificarCarrito(int id, LocalDate fecha, LocalTime hora, boolean cerrado, double descuento, Cliente cliente,
-			Entrega entrega) throws Exception {
-		Carrito CarritoModificado = this.traerCarrito(id);
+	
+	
+	/*CRUD ARTICULOS*/
+	
+	private int getIdArticulo() {
+		if (lstArticulo.size() == 0) {
+			return 0;
+		}
+		else {
+			// Le suma 1 al ultimo id guardado en la lista.
+			return lstArticulo.get(lstArticulo.size()-1).getId() + 1;
+		}
+	}
+	
+	private int articuloExiste(Articulo articulo) {
+		// Si no existe retorna -1. Si existe retorna la posicion donde se encuentra
+		boolean existe = false;
+		int pos = -1, i = 0;
 		
-		if ( CarritoModificado != null ) {
-			CarritoModificado.setFecha(fecha);
-			CarritoModificado.setHora(hora);
-			CarritoModificado.setCerrado(cerrado);
-			CarritoModificado.setDescuento(descuento);
-			CarritoModificado.setCliente(cliente);
-			CarritoModificado.setEntrega(entrega);
+		while(!existe && i<lstArticulo.size()) {
+			if(lstArticulo.get(i).equals(articulo)) {
+				pos = i;
+				existe = true;
+			}
+			i++;
+		}
+		return pos;
+	}
+	
+	
+	public boolean agregarArticulo(String nombre, String codBarras, double precio) throws Exception {
+		if(precio < 1) throw new Exception("ERROR. El precio no puede ser 0 o negativo");
+		
+		Articulo nuevoArticulo = new Articulo(getIdArticulo(), nombre,codBarras,precio);
+		
+		if(this.articuloExiste(nuevoArticulo) == -1) {
+			this.lstArticulo.add(nuevoArticulo);
+		}
+		else {
+			throw new Exception ("ERROR. El articulo ya existe");
+		}
+		
+		return false;
+	}
+	
+	public Articulo traerArticulo(int id) {
+		boolean existe = false;
+		int i = 0;
+		Articulo articulo = null;
+		
+		while(!existe && i<lstArticulo.size()) {
+			if(lstArticulo.get(i).getId() == id) {
+				articulo = lstArticulo.get(i);
+				existe = true;
+			}
+			i++;
+		}
+		return articulo;
+	}
+	
+	
+public boolean eliminarArticulo(int id) throws Exception {
+		
+		Articulo articuloAEliminar = this.traerArticulo(id);
+		
+		int pos = this.articuloExiste(articuloAEliminar);
+		
+		if ( pos != -1 ) {
+			lstArticulo.remove(pos);
 			return true;
 		}
 		else {
-			throw new Exception ("ERROR. El carrito seleccionado no existe.");
+			throw new Exception ("ERROR. No se pudo eliminar el articulo");
 		}
 		
 	}
