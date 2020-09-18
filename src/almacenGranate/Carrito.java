@@ -107,15 +107,17 @@ public class Carrito {
 	@Override
 	public String toString() {
 		
-		String texto = "Carrino nº " + id + " fecha: " + fecha + " " + hora + "\nCliente: " + cliente +
-				"\nPRODUCTOS:\nID\tNOMBRE\t\tPRECIO  CODBARRAS  CANTIDAD  SUBTOTAL\n" + lstItemCarrito.toString().replace("[","").replace("]","").replace(",", "").replace(" ", "")+ 
-				"\nTotal: " + this.calcularTotal() + "\nDecuento: " + this.descuento + "\nTotal a pagar: " + this.totalAPagarCarrito(); 
+		double totalAPagar = this.totalAPagarCarrito();
+		
+		String texto = "\nCarrito nº " + id + " fecha: " + fecha + " " + hora + "\nCliente: " + cliente +
+				"\nPRODUCTOS:\nID\tNOMBRE\t\tPRECIO  CODBARRAS\t CANTIDAD\tSUBTOTAL\n" + lstItemCarrito.toString().replace("[","").replace("]","").replace(",", "").replace(" ", "")+ 
+				"\nTotal: " + this.calcularTotal() + "\nDescuento: " + this.descuento + "\nTotal a pagar: " + totalAPagar; 
 		
 		if(entrega instanceof Envio) {
-			texto += "\n(Costo de envio: " + ((Envio) entrega).getCosto() + ")";
+			texto += "\n" + ((Envio)entrega).toString();
 		}
 		else {
-			texto += "\n\n\tHora de retiro: " + ((RetiroLocal) entrega).getHoraEntrega();
+			texto += "\n\n\tFecha de retiro: " + entrega.getFecha()  + " " + ((RetiroLocal) entrega).getHoraEntrega();
 		}
 		
 		return texto;
@@ -239,20 +241,39 @@ public class Carrito {
 	}
 	
 	public double totalAPagarCarrito() {
+		this.setDescuento(this.calcularDescuentoCarrito(comercio.getDiaDescuento(), 
+				comercio.getPorcentajeDescuentoDia(), comercio.getPorcentajeDescuentoEfectivo()));
 		double total = this.calcularTotal() - this.descuento;
 		
 		if(entrega instanceof Envio) {
-			((Envio) entrega).setCosto(comercio.getContacto().getUbicacion(),comercio.getCostoFijo(),comercio.getCostoPorKm());
-			total += ((Envio) entrega).getCosto();
+			try {
+				total += this.setCostoEntrega();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				System.out.println("\nCarrito nº " + this.id + " No podra recibir su pedido porque ingreso una fecha de envio invalida.\n"
+						+ "Para solucionar este problema comuniquese con servicio de atencion al cliente.");
+				((Envio)entrega).setCosto(-1);
+			}
 		}
 		else {
-			((RetiroLocal) entrega).setHoraEntrega(hora);
+			try {
+				this.setHoraEntrega(this.fecha);
+			}
+			catch(Exception e){
+				((RetiroLocal) entrega).setHoraEntrega(null);
+				System.out.println("\nCarrito nº " + this.id + " No podra retirar su pedido porque ingreso una fecha de retiro invalida.\n"
+						+ "Para solucionar este problema comuniquese con servicio de atencion al cliente.");
+				
+			}
+			
 		}
 		
 		this.setCerrado(true);
 		
 		return total;
 	}
+	
+	
 	
 	public double calcularDescuentoDia(int diaDescuento, double porcentajeDescuento) {
 		
@@ -296,19 +317,33 @@ public class Carrito {
 		
 		return descuentoMayor;
 	}
-	/*
-	private Comercio comercio;
 	
-	public void setHoraEntrega(LocalDate fecha) {
-		List <Turno> listaTurnosLibres = comercio.traerTurnosLibres(fecha);
-		
-		if(entrega instanceof RetiroLocal) {
-			((RetiroLocal) entrega).setHoraEntrega(listaTurnosLibres.get(0).getHora());
+	private void setHoraEntrega(LocalDate fecha) throws Exception {			
+		if( entrega.getFecha().isAfter(fecha) || entrega.getFecha().equals(fecha) ) {
+			List <LocalTime> horariosDisponibles = this.comercio.traerHoraRetiro(entrega.getFecha());
+			
+			//Generamos un numero random de posicion de la lista para asignarlo como hora de retiro
+			
+			int numeroPosRandom = (int)(Math.random()*( horariosDisponibles.size() - 1) );
+			
+			if(((RetiroLocal) entrega).getHoraEntrega() == null)
+				((RetiroLocal) entrega).setHoraEntrega(horariosDisponibles.get(numeroPosRandom));
 		}
-
-		listaTurnosLibres.get(0).setOcupado(true);
-		
+		else {
+			throw new Exception("ERROR. La fecha de entrega no puede ser anterior a la fecha de compra del carrito.");
+		}
 	}
-	*/
+	
+	private double setCostoEntrega() throws Exception {
+		double costo = 0;
+		if( entrega.getFecha().isAfter(fecha) || entrega.getFecha().equals(fecha) ) {
+			((Envio) entrega).setCosto(comercio.getContacto().getUbicacion(),comercio.getCostoFijo(),comercio.getCostoPorKm());
+			costo = ((Envio) entrega).getCosto();
+		}
+		else {
+			throw new Exception("ERROR. La fecha de entrega no puede ser anterior a la fecha de compra del carrito.");
+		}
+		return costo;
+	}
 
 }
