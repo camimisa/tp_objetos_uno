@@ -1,5 +1,7 @@
 package almacenGranate;
 
+import java.util.regex.Pattern;
+
 public class Articulo {
 
 	private int id;
@@ -79,7 +81,7 @@ public class Articulo {
         int finalSumaCogBarras = 0;
         int digitoVerificador;
         
-        if (codBarras.length() == 13) { // SI EL COD TIENE 13 DIGITOS ENTRE EN EL IF
+        if (Pattern.matches("[0-9]{13}", codBarras)) { // SI EL COD TIENE 13 DIGITOS ENTRE EN EL IF
             for (int i = 0 ; i < codBarras.length() - 1; i++) {// HAGO UN FOR RECORRIENDO 12
                 if (i % 2 != 0) {// SI ES IMPAR
                     sumaCodBarras += (Character.getNumericValue(codBarras.charAt(i)) * 3);
