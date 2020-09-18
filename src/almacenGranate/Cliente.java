@@ -5,9 +5,9 @@ public class Cliente extends Actor {
 
 	private String apellido;
 	private String nombre;
-	private int dni;
+	private long dni;
 
-	public Cliente(int id, Contacto contacto, String apellido, String nombre, int dni) throws Exception {
+	public Cliente(int id, Contacto contacto, String apellido, String nombre, long dni) throws Exception {
 		super(id, contacto);
 		this.setApellido(apellido);
 		this.setNombre(nombre);
@@ -31,14 +31,14 @@ public class Cliente extends Actor {
 		this.nombre = nombre;
 	}
 
-	public int getDni() {
+	public long getDni() {
 		return dni;
 	}
 
-	public void setDni(int dni) throws Exception{
-		this.dni = dni;
+	public void setDni(long dni) throws Exception{
 		//Validar dni espera un string para hacer la validacion, por eso lo tengo que castear.
-		if(!validarIdentificadorUnico()) throw new Exception("ERROR. Dni invalido");
+		if(!validarIdentificadorUnico(dni)) throw new Exception("ERROR. Dni invalido");
+		else this.dni = dni;
 
 	}
 
@@ -54,8 +54,8 @@ public class Cliente extends Actor {
 
 
 	@Override
-	protected boolean validarIdentificadorUnico() {
-		String auxDni = String.valueOf(dni);
+	protected boolean validarIdentificadorUnico(long identificador) {
+		String auxDni = String.valueOf(identificador);
 		//Retorna true si cumple con el siguiente patron: 7 u 8 numeros del 0 al 9
 				return Pattern.matches("[0-9]{7,8}", auxDni);
 	}

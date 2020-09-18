@@ -17,19 +17,20 @@ public class Comercio extends Actor {
 	private int porcentajeDescuentoEfectivo;
 	private List<DiaRetiro> lstDiaRetiro;
 	private List<Carrito> lstCarrito;
+	private List<Articulo> lstArticulo;
 
 	public Comercio(int id, Contacto contacto, String nombreComercio, long cuit, double costoFijo, double costoPorKm,
 			int diaDescuento, int porcentajeDescuentoDia, int porcentajeDescuentoEfectivo) throws Exception {
 		super(id, contacto);
-		this.nombreComercio = nombreComercio;
+		this.setNombreComercio(nombreComercio);
 		this.setCuit(cuit);
-		this.costoFijo = costoFijo;
-		this.costoPorKm = costoPorKm;
-		this.diaDescuento = diaDescuento;
-		this.porcentajeDescuentoDia = porcentajeDescuentoDia;
-		this.porcentajeDescuentoEfectivo = porcentajeDescuentoEfectivo;
+		this.setCostoFijo(costoFijo);
+		this.setCostoPorKm(costoPorKm);
+		this.setPorcentajeDescuentoDia(porcentajeDescuentoDia);
+		this.setPorcentajeDescuentoEfectivo(porcentajeDescuentoEfectivo);
 		this.lstDiaRetiro = new ArrayList<DiaRetiro>();
 		this.lstCarrito = new ArrayList<Carrito>();
+		this.lstArticulo = new ArrayList<Articulo>();
 	}
 
 	public String getNombreComercio() {
@@ -45,9 +46,12 @@ public class Comercio extends Actor {
 	}
 
 	public void setCuit(long cuit) throws Exception {
-		this.cuit = cuit;
-		if(!this.validarIdentificadorUnico())
-			cuit = 0;
+		if(this.validarIdentificadorUnico(cuit)) {
+			this.cuit = cuit;
+		}
+		else {
+			throw new Exception("ERROR. Cuit invalido");
+		}
 	}
 
 	public double getCostoFijo() {
@@ -55,7 +59,12 @@ public class Comercio extends Actor {
 	}
 
 	public void setCostoFijo(double costoFijo) {
-		this.costoFijo = costoFijo;
+		if(costoFijo > 0) {
+			this.costoFijo = costoFijo;
+		}
+		else {
+			this.costoFijo = 1;
+		}
 	}
 
 	public double getCostoPorKm() {
@@ -63,7 +72,12 @@ public class Comercio extends Actor {
 	}
 
 	public void setCostoPorKm(double costoPorKm) {
-		this.costoPorKm = costoPorKm;
+		if(costoPorKm >= 0) {
+			this.costoPorKm = costoPorKm;
+		}
+		else {
+			this.costoPorKm = 0;
+		}
 	}
 
 	public int getDiaDescuento() {
@@ -71,7 +85,12 @@ public class Comercio extends Actor {
 	}
 
 	public void setDiaDescuento(int diaDescuento) {
-		this.diaDescuento = diaDescuento;
+		if(diaDescuento > 0) {
+			this.diaDescuento = diaDescuento;
+		}
+		else {
+			this.diaDescuento = 1;
+		}
 	}
 
 	public int getPorcentajeDescuentoDia() {
@@ -79,7 +98,13 @@ public class Comercio extends Actor {
 	}
 
 	public void setPorcentajeDescuentoDia(int porcentajeDescuentoDia) {
-		this.porcentajeDescuentoDia = porcentajeDescuentoDia;
+		if( porcentajeDescuentoDia >= 0 ) {
+			this.porcentajeDescuentoDia = porcentajeDescuentoDia;
+		}
+		else {
+			this.porcentajeDescuentoDia = 0;
+		}
+		
 	}
 
 	public int getPorcentajeDescuentoEfectivo() {
@@ -87,7 +112,12 @@ public class Comercio extends Actor {
 	}
 
 	public void setPorcentajeDescuentoEfectivo(int porcentajeDescuentoEfectivo) {
-		this.porcentajeDescuentoEfectivo = porcentajeDescuentoEfectivo;
+		if( porcentajeDescuentoEfectivo >= 0 ) {
+			this.porcentajeDescuentoEfectivo = porcentajeDescuentoEfectivo;
+		}
+		else {
+			this.porcentajeDescuentoEfectivo = 0;
+		}
 	}
 
 	public List<DiaRetiro> getLstDiaRetiro() {
@@ -105,18 +135,25 @@ public class Comercio extends Actor {
 	public void setLstCarrito(List<Carrito> lstCarrito) {
 		this.lstCarrito = lstCarrito;
 	}
+	
+
+	public List<Articulo> getLstArticulo() {
+		return lstArticulo;
+	}
+
+	public void setLstArticulo(List<Articulo> lstArticulo) {
+		this.lstArticulo = lstArticulo;
+	}
 
 	@Override
 	public String toString() {
 		return "Comercio [nombreComercio=" + nombreComercio + ", cuit=" + cuit + ", costoFijo=" + costoFijo
 				+ ", costoPorKm=" + costoPorKm + ", diaDescuento=" + diaDescuento + ", porcentajeDescuentoDia="
 				+ porcentajeDescuentoDia + ", porcentajeDescuentoEfectivo=" + porcentajeDescuentoEfectivo
-				+ ", lstDiaRetiro=" + lstDiaRetiro + ", lstCarrito=" + lstCarrito + "]";
+				+ ", lstDiaRetiro=" + lstDiaRetiro + ", lstCarrito=" + lstCarrito + ",lstArticulo="+ lstArticulo +"]";
 	}
 
 	// --------------------------------------TP---------------------------------------
-	
-	// TODO: revisar esto
 	
 	private int getIdCarrito() {
 		if (lstCarrito.size() == 0) {
@@ -139,12 +176,12 @@ public class Comercio extends Actor {
 	}
 	
 	@Override
-	protected boolean validarIdentificadorUnico() throws Exception {
+	protected boolean validarIdentificadorUnico(long identificador){
 		
-		String cuitString = "" + this.cuit;
+		String cuitString = String.valueOf(identificador);
 		
 		if(cuitString.length()>11) {
-			throw new Exception ("ERROR. Supera los 11 caracteres.");
+			return false;
 		}
 		
 		int suma,ultimoNumero=0;
@@ -156,22 +193,11 @@ public class Comercio extends Actor {
 				Character.getNumericValue(segundaParte.charAt(2)) * 7 + Character.getNumericValue(segundaParte.charAt(3)) * 6 + Character.getNumericValue(segundaParte.charAt(4)) * 5 + Character.getNumericValue(segundaParte.charAt(5)) * 4 +
 				Character.getNumericValue(segundaParte.charAt(6)) * 3 + Character.getNumericValue(segundaParte.charAt(7)) * 2 ;
 		
-		suma = suma%11;
-		
-		switch(suma) {
-		case 0: ultimoNumero = 0;
-		break;
-		case 1: 
-			//TODO: no se q poner en este caso si es empresa
-		break;
-		default:
-			ultimoNumero = 11 - suma;
-		break;
-		}
+		ultimoNumero = 11 - suma%11;
 		
 		if(Character.getNumericValue(tercerParte) != ultimoNumero) {
 			
-			throw new Exception ("ERROR. El ultimo digito de tu cuil esta mal ingresado.");
+			return false;
 		}
 		
 		return true;
@@ -179,6 +205,10 @@ public class Comercio extends Actor {
 	
 	public List<Turno> generarTurnosLibres(LocalDate fecha) {
 		// Genera una lista con T.ODOS los turnos de ese dia. (Turnos libres)
+		
+		if(lstDiaRetiro.size() == 0) {
+			return null;
+		}
 		
 		DiaRetiro diaRetiro = this.traerDiaRetiro(fecha);
 		/* Calcula la cantidad de minutos que hay entre la primer hora de retiro hasta la ultima para despues poder
@@ -208,20 +238,24 @@ public class Comercio extends Actor {
 	public List<Turno> generarAgenda(LocalDate fecha){
 		// Devuelve todos los turnos de esa fecha. Los libres y los ocupados.
 		List <Turno> turnos = this.generarTurnosLibres(fecha);
-		Entrega entregaCarrito = null;
+		RetiroLocal entregaCarrito = null;
 		int i = 0;
+		boolean horaEncontrada = false;
 		// Trae los carritos que fueron comprados ese dia.
 		List <Carrito> carritosFecha = this.traerCarritos(fecha);
 		for(Carrito carrito: carritosFecha) {
-			entregaCarrito = carrito.getEntrega();
+			horaEncontrada = false;
+			i = 0;
 			// Solo tienen turno los que se retiran en el local.
-			if(entregaCarrito instanceof RetiroLocal) {
-				// Se chequea esto para que no haya una excepcion.
-				if (i < turnos.size()) {
-					// Si la hora del retiro en el local es igual a uno de los horarios disponibles para retirar
-					// entonces ese turno esta ocupado.
-					if(((RetiroLocal) entregaCarrito).getHoraEntrega() == turnos.get(i).getHora()) {
+			
+			if(carrito.getEntrega() instanceof RetiroLocal) {
+				entregaCarrito = (RetiroLocal) carrito.getEntrega();
+				
+				while( !horaEncontrada && turnos.size() > i ) {
+					if( (entregaCarrito.getHoraEntrega() != null) 
+							&& (entregaCarrito.getHoraEntrega().equals(turnos.get(i).getHora())) ) {
 						turnos.get(i).setOcupado(true);
+						horaEncontrada = true;
 					}
 					i++;
 				}
@@ -241,6 +275,18 @@ public class Comercio extends Actor {
 		}
 		
 		return turnosLibres;
+	}
+	
+	public List<LocalTime> traerHoraRetiro (LocalDate fecha){
+		
+		List <LocalTime> horasDisponibles = new ArrayList<LocalTime>();
+		List <Turno> turnosLibres = this.traerTurnosLibres(fecha);
+		
+		for(Turno turno : turnosLibres) {
+			horasDisponibles.add(turno.getHora());
+		}
+		
+		return horasDisponibles;
 	}
 	
 	public List<Turno> traerTurnosOcupados(LocalDate fecha){
@@ -346,11 +392,12 @@ public class Comercio extends Actor {
 		
 	}
 	
-	public boolean agregarCarrito(LocalDate fecha, LocalTime hora, boolean cerrado, double descuento, Cliente cliente,
+	public boolean agregarCarrito(LocalDate fecha, LocalTime hora, double descuento, Cliente cliente,
 			Entrega entrega) throws Exception {
-		Carrito nuevoCarrito = new Carrito(getIdCarrito(), fecha, hora,cerrado,descuento,cliente,entrega);
+		Carrito nuevoCarrito = new Carrito(getIdCarrito(), fecha, hora,descuento,cliente,entrega);
 		
 		if(this.carritoExiste(nuevoCarrito) == -1) {
+			nuevoCarrito.setComercio(this);
 			this.lstCarrito.add(nuevoCarrito);
 		}
 		else {
@@ -417,21 +464,79 @@ public class Comercio extends Actor {
 		
 	}
 	
-	public boolean modificarCarrito(int id, LocalDate fecha, LocalTime hora, boolean cerrado, double descuento, Cliente cliente,
-			Entrega entrega) throws Exception {
-		Carrito CarritoModificado = this.traerCarrito(id);
+	
+	
+	/*CRUD ARTICULOS*/
+	
+	private int getIdArticulo() {
+		if (lstArticulo.size() == 0) {
+			return 0;
+		}
+		else {
+			// Le suma 1 al ultimo id guardado en la lista.
+			return lstArticulo.get(lstArticulo.size()-1).getId() + 1;
+		}
+	}
+	
+	private int articuloExiste(Articulo articulo) {
+		// Si no existe retorna -1. Si existe retorna la posicion donde se encuentra
+		boolean existe = false;
+		int pos = -1, i = 0;
 		
-		if ( CarritoModificado != null ) {
-			CarritoModificado.setFecha(fecha);
-			CarritoModificado.setHora(hora);
-			CarritoModificado.setCerrado(cerrado);
-			CarritoModificado.setDescuento(descuento);
-			CarritoModificado.setCliente(cliente);
-			CarritoModificado.setEntrega(entrega);
+		while(!existe && i<lstArticulo.size()) {
+			if(lstArticulo.get(i).equals(articulo)) {
+				pos = i;
+				existe = true;
+			}
+			i++;
+		}
+		return pos;
+	}
+	
+	
+	public boolean agregarArticulo(String nombre, String codBarras, double precio) throws Exception {
+		if(precio < 1) throw new Exception("ERROR. El precio no puede ser 0 o negativo");
+		
+		Articulo nuevoArticulo = new Articulo(getIdArticulo(), nombre,codBarras,precio);
+		
+		if(this.articuloExiste(nuevoArticulo) == -1) {
+			this.lstArticulo.add(nuevoArticulo);
+		}
+		else {
+			throw new Exception ("ERROR. El articulo ya existe");
+		}
+		
+		return false;
+	}
+	
+	public Articulo traerArticulo(int id) {
+		boolean existe = false;
+		int i = 0;
+		Articulo articulo = null;
+		
+		while(!existe && i<lstArticulo.size()) {
+			if(lstArticulo.get(i).getId() == id) {
+				articulo = lstArticulo.get(i);
+				existe = true;
+			}
+			i++;
+		}
+		return articulo;
+	}
+	
+	
+	public boolean eliminarArticulo(int id) throws Exception {
+		
+		Articulo articuloAEliminar = this.traerArticulo(id);
+		
+		int pos = this.articuloExiste(articuloAEliminar);
+		
+		if ( pos != -1 ) {
+			lstArticulo.remove(pos);
 			return true;
 		}
 		else {
-			throw new Exception ("ERROR. El carrito seleccionado no existe.");
+			throw new Exception ("ERROR. No se pudo eliminar el articulo");
 		}
 		
 	}
