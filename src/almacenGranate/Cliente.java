@@ -49,7 +49,7 @@ public class Cliente extends Actor {
 	
 	public boolean validarNombreApellido(String nombre) throws Exception {
 		//Retorna true si cumple con el siguiente patron: Solo letras mayusculas o minusculas de la a la z
-		return Pattern.matches("^[a-zA-Z_]+$", nombre);
+		return Pattern.matches("^[a-zA-Z\s]+$", nombre);
 	}
 
 

@@ -29,7 +29,7 @@ public class Test {
 		
 		try {
 			Contacto contacto = new Contacto("Seba@seba.com", "1134274702", ubicacion);
-			Cliente cliente = new Cliente(1, contacto, "Godirio", "Sebastian", 42472667L);
+			Cliente cliente = new Cliente(1, contacto, "Godirio", "Sebastian Leonel", 42472667L);
 			
 			/* ###Pruebas de excepciones###
 			 			
@@ -82,7 +82,7 @@ public class Test {
 		comercio.agregarArticulo("Manteca", "7613025036393", 90.0);
 				
 		Cliente clienteUno = new Cliente(listaClientes.size(),new Contacto("cliente_uno@gmail.com","1134274702",
-							new Ubicacion(-34.803349, -58.448702)),"Garcia","Camila",43182591L);
+							new Ubicacion(-34.803349, -58.448702)),"Garcia Misa","Camila",43182591L);
 		
 		listaClientes.add(clienteUno);
 		
