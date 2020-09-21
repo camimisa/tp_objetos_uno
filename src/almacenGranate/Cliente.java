@@ -6,12 +6,14 @@ public class Cliente extends Actor {
 	private String apellido;
 	private String nombre;
 	private long dni;
+	private char sexo;
 
-	public Cliente(int id, Contacto contacto, String apellido, String nombre, long dni) throws Exception {
+	public Cliente(int id, Contacto contacto, String apellido, String nombre, long dni , char sexo) throws Exception {
 		super(id, contacto);
 		this.setApellido(apellido);
 		this.setNombre(nombre);
 		this.setDni(dni);
+		this.setSexo(sexo);
 	}
 
 	public String getApellido() {
@@ -41,15 +43,31 @@ public class Cliente extends Actor {
 		else this.dni = dni;
 
 	}
+	
+
+	public char getSexo() {
+		return sexo;
+	}
+
+	public void setSexo(char sexo) throws Exception {
+		if(!validarSexo(sexo)) throw new Exception("ERROR. Sexo invalido. Ingrese 'm' o 'f'"); 
+		this.sexo = sexo;
+	}
 
 	@Override
 	public String toString() {
 		return "" + apellido + " " + nombre + " dni: " + dni + "\n";
 	}
 	
-	public boolean validarNombreApellido(String nombre) throws Exception {
+	private boolean validarNombreApellido(String nombre) throws Exception {
 		//Retorna true si cumple con el siguiente patron: Solo letras mayusculas o minusculas de la a la z
 		return Pattern.matches("^[a-zA-Z\s]+$", nombre);
+	}
+	
+	private boolean validarSexo(char sexo){
+		String auxSexo = String.valueOf(sexo);
+		//Retorna true si cumple con el siguiente patron: m o f mayuscula o minuscula
+		return Pattern.matches("[mMfF]{1}", auxSexo);
 	}
 
 

@@ -29,7 +29,7 @@ public class Test {
 		
 		try {
 			Contacto contacto = new Contacto("Seba@seba.com", "1134274702", ubicacion);
-			Cliente cliente = new Cliente(1, contacto, "Godirio", "Sebastian Leonel", 42472667L);
+			Cliente cliente = new Cliente(1, contacto, "Godirio", "Sebastian Leonel", 42472667L,'M');
 			
 			/* ###Pruebas de excepciones###
 			 			
@@ -45,11 +45,18 @@ public class Test {
 			Contacto contactoNombreInvalido = new Contacto("Seba@seba.com", "1134274702", ubicacion);
 			Cliente clienteNombreInvalido = new Cliente(5, contactoNombreInvalido, "Godirio", "--Sebastian", 42472667);
 			
+			Contacto contactoSexoInvalido = new Contacto("Seba@seba.com", "1134274702", ubicacion);
+			Cliente clienteSexoInvalido = new Cliente(5, contactoSexoInvalido, "Godirio", "Sebastian", 42472667,'A');
+			
 			System.out.println(clienteMailErroneo);	
 			System.out.println(clienteCelularErroneo);
 			System.out.println(clienteDniErroneo);
 			System.out.println(contactoNombreInvalido);
+			System.out.println(clienteSexoInvalido);
 			*/
+			
+			
+			
 			
 			System.out.println(cliente);
 			System.out.println(cliente.traerUbicacion());
@@ -80,9 +87,20 @@ public class Test {
 		comercio.agregarArticulo("Arroz", "7613088888397", 30.0);
 		comercio.agregarArticulo("Pan lactal", "7613123468393", 100.0);
 		comercio.agregarArticulo("Manteca", "7613025036393", 90.0);
+		
+		//Pruebas CRUD de lista de articulo
+		
+		//ARTICULO CON CODIGO DE BARRAS ERRONEO: comercio.agregarArticulo("Cafe", "76125036393", 20);
+		//ARTICULO CON PRECIO NEGATIVO: comercio.agregarArticulo("Manteca", "7613025036393", -45);
+		
+		//System.out.println(comercio.traerArticulo(1));
+		//comercio.eliminarArticulo(1);
+		//System.out.println(comercio.traerArticulo(1));
+		
+		//System.out.println(comercio.getLstArticulo());
 				
 		Cliente clienteUno = new Cliente(listaClientes.size(),new Contacto("cliente_uno@gmail.com","1134274702",
-							new Ubicacion(-34.803349, -58.448702)),"Garcia Misa","Camila",43182591L);
+							new Ubicacion(-34.803349, -58.448702)),"Garcia Misa","Camila",43182591L,'f');
 		
 		listaClientes.add(clienteUno);
 		
@@ -120,16 +138,22 @@ public class Test {
 		//comercio.eliminarArticulo(2);
 		//System.out.println(comercio.traerArticulo(2));
 		 
-		Entrega entregaRetiroLocal2 = new RetiroLocal(1,LocalDate.parse("2020-09-17"),false); 
-		comercio.agregarCarrito(LocalDate.parse("2020-09-16"), LocalTime.parse("19:00"), 0, clienteUno, entregaRetiroLocal2);
+		 try {
+			 Entrega entregaRetiroLocal2 = new RetiroLocal(1,LocalDate.parse("2020-09-17"),false); 
+			comercio.agregarCarrito(LocalDate.parse("2020-09-16"), LocalTime.parse("19:00"), 0, clienteUno, entregaRetiroLocal2);
+				
+			Carrito carritoDos = comercio.traerCarrito(comercio.getLstCarrito().get(1).getId());
 			
-		Carrito carritoDos = comercio.traerCarrito(comercio.getLstCarrito().get(1).getId());
+			carritoDos.agregar(comercio.traerArticulo(1), 2);
+			carritoDos.agregar(comercio.traerArticulo(2), 3);
+			carritoDos.agregar(comercio.traerArticulo(3), 5);
 		
-		carritoDos.agregar(comercio.traerArticulo(1), 2);
-		carritoDos.agregar(comercio.traerArticulo(2), 3);
-		carritoDos.agregar(comercio.traerArticulo(3), 5);
+			System.out.println(carritoDos);
+		 } catch(Exception e) {
+			 System.out.println(e);
+		 }
+		 
 		
-		System.out.println(carritoDos);
 	}
 
 }

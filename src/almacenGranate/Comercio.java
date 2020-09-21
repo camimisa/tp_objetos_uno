@@ -478,7 +478,7 @@ public class Comercio extends Actor {
 		}
 	}
 	
-	private int articuloExiste(Articulo articulo) {
+	public int articuloExiste(Articulo articulo) {
 		// Si no existe retorna -1. Si existe retorna la posicion donde se encuentra
 		boolean existe = false;
 		int pos = -1, i = 0;
@@ -509,7 +509,7 @@ public class Comercio extends Actor {
 		return false;
 	}
 	
-	public Articulo traerArticulo(int id) {
+	public Articulo traerArticulo(int id)throws Exception {
 		boolean existe = false;
 		int i = 0;
 		Articulo articulo = null;
@@ -521,6 +521,7 @@ public class Comercio extends Actor {
 			}
 			i++;
 		}
+		if(!existe) throw new Exception("ERROR. El articulo que desea agregar no existe en el supermercado");
 		return articulo;
 	}
 	

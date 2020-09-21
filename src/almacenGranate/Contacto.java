@@ -45,17 +45,18 @@ public class Contacto {
 		return "Contacto [email=" + email + ", celular=" + celular + ", ubicacion=" + ubicacion + "]";
 	}
 	
-	public boolean validarEmail(String email) {
+	private boolean validarEmail(String email) {
 		//retorna true si cumple el siguiente patron: Cualquier caracter que no sea @.
 		//Le sigue un solo arroba. Le siguen cualquiera de los caracteres que no sea @
 		//Le sigue un unico. Le sigue por lo menos dos numero de la a a la z
 		return Pattern.matches("^[^@]+@[^@]+\\.[a-zA-Z]{2,}$", email);
 	}
 	
-	public boolean validarCelular(String celular) {
+	private boolean validarCelular(String celular) {
 		//Returna true si cumple el patron: Minimo 10 numeros. Solos numero del 0 al 9
 		return Pattern.matches("[0-9]{10,}", celular);
 	}
+
 
 }
 
