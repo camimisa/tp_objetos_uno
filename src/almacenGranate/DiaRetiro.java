@@ -10,12 +10,12 @@ public class DiaRetiro {
 	private LocalTime horaHasta;
 	private int intervalo;
 
-	public DiaRetiro(int id, int diaSemana, LocalTime horaDesde, LocalTime horaHasta, int intervalo) {
+	public DiaRetiro(int id, int diaSemana, LocalTime horaDesde, LocalTime horaHasta, int intervalo) throws Exception {
 		this.id = id;
-		this.diaSemana = diaSemana;
+		this.setDiaSemana(diaSemana);
 		this.horaDesde = horaDesde;
 		this.horaHasta = horaHasta;
-		this.intervalo = intervalo;
+		this.setIntervalo(intervalo);
 	}
 
 	public int getId() {
@@ -30,8 +30,13 @@ public class DiaRetiro {
 		return diaSemana;
 	}
 
-	public void setDiaSemana(int diaSemana) {
-		this.diaSemana = diaSemana;
+	public void setDiaSemana(int diaSemana) throws Exception {
+		if( 0 < diaSemana && diaSemana < 8)
+			this.diaSemana = diaSemana;
+		else {
+			this.diaSemana = 1;
+			throw new Exception ("ERROR. Dia se semana invalido");
+		}
 	}
 
 	public LocalTime getHoraDesde() {
@@ -55,7 +60,10 @@ public class DiaRetiro {
 	}
 
 	public void setIntervalo(int intervalo) {
-		this.intervalo = intervalo;
+		if (intervalo > 0)
+			this.intervalo = intervalo;
+		else 
+			this.intervalo = 15;
 	}
 
 	@Override
@@ -66,12 +74,6 @@ public class DiaRetiro {
 	}
 
 	public boolean equals(DiaRetiro diaRetiro) {
-		//TODO: elegir la opcion apropiada
-		/*
-		if( (this.diaSemana == diaRetiro.getDiaSemana()) && (this.horaDesde.equals(diaRetiro.getHoraDesde())) && 
-				(this.horaHasta.equals(diaRetiro.getHoraHasta())) && (this.intervalo == diaRetiro.getIntervalo()) )
-			return true;
-		*/
 		if(this.diaSemana == diaRetiro.getDiaSemana())
 				return true;
 		return false;

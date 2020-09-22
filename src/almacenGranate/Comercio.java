@@ -49,9 +49,6 @@ public class Comercio extends Actor {
 		if(this.validarIdentificadorUnico(cuit)) {
 			this.cuit = cuit;
 		}
-		else {
-			throw new Exception("ERROR. Cuit invalido");
-		}
 	}
 
 	public double getCostoFijo() {
@@ -167,7 +164,7 @@ public class Comercio extends Actor {
 	
 	private int getIdDiaRetiro() {
 		if (lstDiaRetiro.size() == 0) {
-			return 0;
+			return 1;
 		}
 		else {
 			// Le suma 1 al ultimo id guardado en la lista.
@@ -176,12 +173,12 @@ public class Comercio extends Actor {
 	}
 	
 	@Override
-	protected boolean validarIdentificadorUnico(long identificador){
+	protected boolean validarIdentificadorUnico(long identificador) throws Exception{
 		
 		String cuitString = String.valueOf(identificador);
 		
-		if(cuitString.length()>11) {
-			return false;
+		if(cuitString.length() != 11) {
+			throw new Exception ("ERROR. Cuit invalido : la cantidad de digitos debe ser 11.");
 		}
 		
 		int suma,ultimoNumero=0;
@@ -196,8 +193,7 @@ public class Comercio extends Actor {
 		ultimoNumero = 11 - suma%11;
 		
 		if(Character.getNumericValue(tercerParte) != ultimoNumero) {
-			
-			return false;
+			throw new Exception ("ERROR. Cuit invalido : ultimo digito incorrecto.");
 		}
 		
 		return true;
@@ -376,11 +372,10 @@ public class Comercio extends Actor {
 		return false;
 	}
 	
-	public boolean modificarDiaRetiro(int id, int diaSemana, LocalTime horaDesde, LocalTime horaHasta, int intervalo) throws Exception {
-		DiaRetiro diaRetiroModificado = this.traerDiaRetiro(id);
+	public boolean modificarDiaRetiro(int diaSemana, LocalTime horaDesde, LocalTime horaHasta, int intervalo) throws Exception {
+		DiaRetiro diaRetiroModificado = this.traerDiaRetiro(diaSemana);
 		
 		if ( diaRetiroModificado != null ) {
-			diaRetiroModificado.setDiaSemana(diaSemana);
 			diaRetiroModificado.setHoraDesde(horaDesde);
 			diaRetiroModificado.setHoraHasta(horaHasta);
 			diaRetiroModificado.setIntervalo(intervalo);
@@ -394,7 +389,21 @@ public class Comercio extends Actor {
 	
 	public boolean agregarCarrito(LocalDate fecha, LocalTime hora, double descuento, Cliente cliente,
 			Entrega entrega) throws Exception {
-		Carrito nuevoCarrito = new Carrito(getIdCarrito(), fecha, hora,descuento,cliente,entrega);
+		Carrito nuevoCarrito = new Carrito(getIdCarrito(), fecha, hora,cliente,entrega);
+		
+		if(this.carritoExiste(nuevoCarrito) == -1) {
+			nuevoCarrito.setComercio(this);
+			this.lstCarrito.add(nuevoCarrito);
+		}
+		else {
+			throw new Exception ("ERROR. El carrito ya existe");
+		}
+		
+		return false;
+	}
+	
+	public boolean agregarCarrito(LocalDate fecha, LocalTime hora, double descuento, Cliente cliente) throws Exception {
+		Carrito nuevoCarrito = new Carrito(getIdCarrito(), fecha, hora,cliente);
 		
 		if(this.carritoExiste(nuevoCarrito) == -1) {
 			nuevoCarrito.setComercio(this);
@@ -478,7 +487,7 @@ public class Comercio extends Actor {
 		}
 	}
 	
-	private int articuloExiste(Articulo articulo) {
+	public int articuloExiste(Articulo articulo) {
 		// Si no existe retorna -1. Si existe retorna la posicion donde se encuentra
 		boolean existe = false;
 		int pos = -1, i = 0;
@@ -509,7 +518,7 @@ public class Comercio extends Actor {
 		return false;
 	}
 	
-	public Articulo traerArticulo(int id) {
+	public Articulo traerArticulo(int id)throws Exception {
 		boolean existe = false;
 		int i = 0;
 		Articulo articulo = null;
@@ -521,6 +530,7 @@ public class Comercio extends Actor {
 			}
 			i++;
 		}
+		if(!existe) throw new Exception("ERROR. El articulo que desea agregar no existe en el supermercado");
 		return articulo;
 	}
 	
