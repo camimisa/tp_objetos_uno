@@ -13,6 +13,7 @@ public class Contacto {
 		this.setCelular(celular);
 		this.ubicacion = ubicacion;
 	}
+	// prueba
 
 	public String getEmail() {
 		return email;
