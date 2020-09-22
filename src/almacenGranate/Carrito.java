@@ -17,8 +17,7 @@ public class Carrito {
 	private Entrega entrega;
 	private Comercio comercio;
 
-	// TODO: entrega no deberia mandarse por parametro.
-	public Carrito(int id, LocalDate fecha, LocalTime hora, double descuento, Cliente cliente, Entrega entrega) {
+	public Carrito(int id, LocalDate fecha, LocalTime hora, Cliente cliente, Entrega entrega) {
 		this.id = id;
 		this.fecha = fecha;
 		this.hora = hora;
@@ -29,6 +28,17 @@ public class Carrito {
 		this.entrega = entrega;
 	}
 
+	public Carrito(int id, LocalDate fecha, LocalTime hora, Cliente cliente) {
+		this.id = id;
+		this.fecha = fecha;
+		this.hora = hora;
+		this.cerrado = false;
+		this.descuento = 0;
+		this.cliente = cliente;
+		this.lstItemCarrito = new ArrayList<ItemCarrito>();
+		this.entrega = null;
+	}
+	
 	public int getId() {
 		return id;
 	}
@@ -95,7 +105,15 @@ public class Carrito {
 	public void setEntrega(Entrega entrega) {
 		this.entrega = entrega;
 	}
+	
+	public void setEntregaEnvio(LocalDate fecha, boolean efectivo, LocalTime horaDesde, LocalTime horaHasta, Ubicacion ubicacion) {
+		this.entrega = new Envio(this.id, fecha, efectivo, horaDesde, horaHasta, ubicacion);
+	}
 
+	public void setEntregaRetiroLocal(LocalDate fecha, boolean efectivo) {
+		this.entrega = new RetiroLocal(this.id, fecha, efectivo);
+	}
+	
 	public Comercio getComercio() {
 		return comercio;
 	}
@@ -112,14 +130,15 @@ public class Carrito {
 		String texto = "\nCarrito nº " + id + " fecha: " + fecha + " " + hora + "\nCliente: " + cliente +
 				"\nPRODUCTOS:\nID\tNOMBRE\t\tPRECIO  CODBARRAS\t CANTIDAD\tSUBTOTAL\n" + lstItemCarrito.toString().replace("[","").replace("]","").replace(",", "").replace(" ", "")+ 
 				"\nTotal: " + this.calcularTotal() + "\nDescuento: " + this.descuento + "\nTotal a pagar: " + totalAPagar; 
-		
-		if(entrega instanceof Envio) {
-			texto += "\n" + ((Envio)entrega).toString();
+		if(this.verificarEntregaVacia()) {
+			if(entrega instanceof Envio) {
+				texto += "\n" + ((Envio)entrega).toString();
+			}
+			else {
+				texto += "\n\n\tFecha de retiro: " + entrega.getFecha()  + " " + ((RetiroLocal) entrega).getHoraEntrega();
+			}
 		}
-		else {
-			texto += "\n\n\tFecha de retiro: " + entrega.getFecha()  + " " + ((RetiroLocal) entrega).getHoraEntrega();
-		}
-		
+
 		return texto;
 	}
 	
@@ -141,7 +160,7 @@ public class Carrito {
 		int posicion = -1;
 		int i = 0;
 		
-		while( (i<lstItemCarrito.size()) && (posicion == -1) ) {
+		while( (i<lstItemCarrito.size()) && (posicion == -1)) {
 			if(lstItemCarrito.get(i).getArticulo().equals(articulo)){
 				posicion = i;
 			}
@@ -173,22 +192,26 @@ public class Carrito {
 			throw new Exception("ERROR. Cantidad NO valida.");
 		
 		int posicion = this.traerPosicionArticulo(articulo);
+		int posicionListaComercio = this.comercio.articuloExiste(articulo);
+		
 		ItemCarrito itemCarrito = new ItemCarrito(articulo,cantidad);
 		int cantidadAux = 0;
 		
-		if( posicion == -1 ) {
-			lstItemCarrito.add(itemCarrito);
-		}
-		else {
-			cantidadAux = lstItemCarrito.get(posicion).getCantidad();
-			lstItemCarrito.get(posicion).setCantidad(cantidadAux + cantidad);
+		if(posicionListaComercio != -1) {
+			if(posicion == -1 ) {
+				lstItemCarrito.add(itemCarrito);
+			}
+			else {
+				cantidadAux = lstItemCarrito.get(posicion).getCantidad();
+				lstItemCarrito.get(posicion).setCantidad(cantidadAux + cantidad);
+			}
+		}else {
+			throw new Exception("ERROR. El articulo que quiere agregar no existe en el comercio.");
 		}
 		
 		return true;
 	}
 	
-	
-	// TODO: si encuentra el archivo lo elimina directamente o disminuye una cantidad?
 	public boolean eliminarItemCarrito(Articulo articulo) throws Exception{
 		int posicion = this.traerPosicionArticulo(articulo);
 		
@@ -241,39 +264,60 @@ public class Carrito {
 	}
 	
 	public double totalAPagarCarrito() {
+		
 		this.setDescuento(this.calcularDescuentoCarrito(comercio.getDiaDescuento(), 
 				comercio.getPorcentajeDescuentoDia(), comercio.getPorcentajeDescuentoEfectivo()));
+		
 		double total = this.calcularTotal() - this.descuento;
 		
-		if(entrega instanceof Envio) {
-			try {
-				total += this.setCostoEntrega();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				System.out.println("\nCarrito nº " + this.id + " No podra recibir su pedido porque ingreso una fecha de envio invalida.\n"
-						+ "Para solucionar este problema comuniquese con servicio de atencion al cliente.");
-				((Envio)entrega).setCosto(-1);
-			}
-		}
-		else {
-			try {
-				this.setHoraEntrega(this.fecha);
-			}
-			catch(Exception e){
-				((RetiroLocal) entrega).setHoraEntrega(null);
-				System.out.println("\nCarrito nº " + this.id + " No podra retirar su pedido porque ingreso una fecha de retiro invalida.\n"
-						+ "Para solucionar este problema comuniquese con servicio de atencion al cliente.");
-				
-			}
-			
-		}
+		total += this.operacionesConEntrega();
 		
 		this.setCerrado(true);
 		
 		return total;
 	}
 	
+	private boolean verificarEntregaVacia() {
+		if(entrega != null) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 	
+	private double operacionesConEntrega() {
+		boolean entregaVacia = false;
+		entregaVacia = this.verificarEntregaVacia();
+		double gastosEnvio = 0;
+		if(!entregaVacia) {
+			System.out.println("\nCarrito nº " + this.id + " No podra recibir su pedido porque NO ingreso un tipo de entrega.\n"
+					+ "Para solucionar este problema comuniquese con servicio de atencion al cliente.");
+		}
+		else {
+			if(entrega instanceof Envio) {
+				try {
+					gastosEnvio = this.setCostoEntrega();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					System.out.println("\nCarrito nº " + this.id + " No podra recibir su pedido porque ingreso una fecha de envio invalida.\n"
+							+ "Para solucionar este problema comuniquese con servicio de atencion al cliente.");
+					((Envio)entrega).setCosto(0);
+				}
+			}
+			else {
+				try {
+					this.setHoraEntrega(this.fecha);
+				}
+				catch(Exception e){
+					((RetiroLocal) entrega).setHoraEntrega(null);
+					System.out.println("\nCarrito nº " + this.id + " No podra retirar su pedido porque ingreso una fecha de retiro invalida.\n"
+							+ "Para solucionar este problema comuniquese con servicio de atencion al cliente.");	
+				}	
+			}
+		}
+		return gastosEnvio;
+	}
 	
 	public double calcularDescuentoDia(int diaDescuento, double porcentajeDescuento) {
 		
@@ -297,8 +341,11 @@ public class Carrito {
 		
 		double descuento = 0;
 		//Calculo el total del carrito para luego aplicarle el descuento si el cliente paga con efectivo.
-		if(this.entrega.getEfectivo())
-			descuento = this.calcularTotal()*porcentajeDescuentoEfectivo/100;
+		if(entrega != null) {
+			if(this.entrega.getEfectivo())
+				descuento = this.calcularTotal()*porcentajeDescuentoEfectivo/100;
+		}
+		
 	
 		return descuento;
 	}
@@ -318,8 +365,12 @@ public class Carrito {
 		return descuentoMayor;
 	}
 	
-	private void setHoraEntrega(LocalDate fecha) throws Exception {			
+	
+	private void setHoraEntrega(LocalDate fecha) throws Exception {	
+		
+		// Se verifica que la fecha de entrega sea el mismo dia del carrito o despues.
 		if( entrega.getFecha().isAfter(fecha) || entrega.getFecha().equals(fecha) ) {
+			
 			List <LocalTime> horariosDisponibles = this.comercio.traerHoraRetiro(entrega.getFecha());
 			
 			//Generamos un numero random de posicion de la lista para asignarlo como hora de retiro
@@ -336,6 +387,7 @@ public class Carrito {
 	
 	private double setCostoEntrega() throws Exception {
 		double costo = 0;
+		// Se verifica que la fecha de entrega sea el mismo dia del carrito o despues.
 		if( entrega.getFecha().isAfter(fecha) || entrega.getFecha().equals(fecha) ) {
 			((Envio) entrega).setCosto(comercio.getContacto().getUbicacion(),comercio.getCostoFijo(),comercio.getCostoPorKm());
 			costo = ((Envio) entrega).getCosto();
