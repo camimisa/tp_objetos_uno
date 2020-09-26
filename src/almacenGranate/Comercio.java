@@ -172,6 +172,19 @@ public class Comercio extends Actor {
 		}
 	}
 	
+	public int getIdCliente() {
+		// Busca el id de cliente mas grande de la lista de carrito y se le suma uno para asignarselo al proximo cliente.
+		int idCliente = 0;
+		if (lstCarrito.size() != 0) {
+			for(Carrito carrito : lstCarrito) {
+				if (idCliente < carrito.getCliente().getId()) {
+					idCliente = carrito.getCliente().getId();
+				}
+			}
+		}
+		return idCliente + 1;
+	}
+	
 	@Override
 	protected boolean validarIdentificadorUnico(long identificador) throws Exception{
 		
@@ -237,24 +250,22 @@ public class Comercio extends Actor {
 		RetiroLocal entregaCarrito = null;
 		int i = 0;
 		boolean horaEncontrada = false;
-		// Trae los carritos que fueron comprados ese dia.
-		List <Carrito> carritosFecha = this.traerCarritos(fecha);
-		for(Carrito carrito: carritosFecha) {
+		// Trae los carritos que su fecha de retiro es igual a la fecha pasada por parametro.
+		List <Carrito> carritosFechaRetiro = this.traerCarritosRetiroLocal(fecha);
+		for(Carrito carrito: carritosFechaRetiro) {
 			horaEncontrada = false;
 			i = 0;
-			// Solo tienen turno los que se retiran en el local.
+			entregaCarrito = (RetiroLocal) carrito.getEntrega();
 			
-			if(carrito.getEntrega() instanceof RetiroLocal) {
-				entregaCarrito = (RetiroLocal) carrito.getEntrega();
-				
-				while( !horaEncontrada && turnos.size() > i ) {
-					if( (entregaCarrito.getHoraEntrega() != null) 
-							&& (entregaCarrito.getHoraEntrega().equals(turnos.get(i).getHora())) ) {
-						turnos.get(i).setOcupado(true);
-						horaEncontrada = true;
-					}
-					i++;
+			// Recorre toda la lista de turnos fijandose si algun carrito tiene turno, si es asi: marca
+			// la hora de su turno como ocupado.
+			while( !horaEncontrada && turnos.size() > i ) {
+				if( (entregaCarrito.getHoraEntrega() != null) 
+						&& (entregaCarrito.getHoraEntrega().equals(turnos.get(i).getHora())) ) {
+					turnos.get(i).setOcupado(true);
+					horaEncontrada = true;
 				}
+				i++;
 			}
 		}
 		return turnos;
@@ -273,7 +284,7 @@ public class Comercio extends Actor {
 		return turnosLibres;
 	}
 	
-	public List<LocalTime> traerHoraRetiro (LocalDate fecha){
+	public List<LocalTime> traerHoraRetiro (LocalDate fecha) {
 		
 		List <LocalTime> horasDisponibles = new ArrayList<LocalTime>();
 		List <Turno> turnosLibres = this.traerTurnosLibres(fecha);
@@ -387,8 +398,7 @@ public class Comercio extends Actor {
 		
 	}
 	
-	public boolean agregarCarrito(LocalDate fecha, LocalTime hora, double descuento, Cliente cliente,
-			Entrega entrega) throws Exception {
+	public boolean agregarCarrito(LocalDate fecha, LocalTime hora, Cliente cliente, Entrega entrega) throws Exception {
 		Carrito nuevoCarrito = new Carrito(getIdCarrito(), fecha, hora,cliente,entrega);
 		
 		if(this.carritoExiste(nuevoCarrito) == -1) {
@@ -402,7 +412,7 @@ public class Comercio extends Actor {
 		return false;
 	}
 	
-	public boolean agregarCarrito(LocalDate fecha, LocalTime hora, double descuento, Cliente cliente) throws Exception {
+	public boolean agregarCarrito(LocalDate fecha, LocalTime hora, Cliente cliente) throws Exception {
 		Carrito nuevoCarrito = new Carrito(getIdCarrito(), fecha, hora,cliente);
 		
 		if(this.carritoExiste(nuevoCarrito) == -1) {
@@ -431,13 +441,19 @@ public class Comercio extends Actor {
 		return carrito;
 	}
 	
-	public List<Carrito> traerCarritos(LocalDate fecha) {
+	public List<Carrito> traerCarritosRetiroLocal(LocalDate fecha) {
+		//Devuelve una lista con los carritos que tienen la misma fecha de retiro por local que la fecha
+		// pasada por parametro.
 		List <Carrito> carritosFecha = new ArrayList<Carrito>();
+		Entrega carritoEntrega = null;
 		
-		for(Carrito carrito : lstCarrito) {
-			if(carrito.getFecha().equals(fecha)) {
-				carritosFecha.add(carrito);
-			}
+		for(Carrito carrito : lstCarrito) {			
+			carritoEntrega = carrito.getEntrega();
+			if(carritoEntrega instanceof RetiroLocal) {
+				if(carritoEntrega.getFecha().equals(fecha)) {
+					carritosFecha.add(carrito);
+				}
+			}	
 		}
 		return carritosFecha;
 	}
@@ -504,7 +520,7 @@ public class Comercio extends Actor {
 	
 	
 	public boolean agregarArticulo(String nombre, String codBarras, double precio) throws Exception {
-		if(precio < 1) throw new Exception("ERROR. El precio no puede ser 0 o negativo");
+		if(precio < 0) throw new Exception("ERROR. El precio no puede ser 0 o negativo");
 		
 		Articulo nuevoArticulo = new Articulo(getIdArticulo(), nombre,codBarras,precio);
 		
@@ -530,7 +546,7 @@ public class Comercio extends Actor {
 			}
 			i++;
 		}
-		if(!existe) throw new Exception("ERROR. El articulo que desea agregar no existe en el supermercado");
+		if(!existe) throw new Exception("ERROR. El articulo no existe en el supermercado.");
 		return articulo;
 	}
 	
@@ -538,7 +554,7 @@ public class Comercio extends Actor {
 	public boolean eliminarArticulo(int id) throws Exception {
 		
 		Articulo articuloAEliminar = this.traerArticulo(id);
-		
+
 		int pos = this.articuloExiste(articuloAEliminar);
 		
 		if ( pos != -1 ) {

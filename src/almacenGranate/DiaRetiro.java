@@ -13,8 +13,8 @@ public class DiaRetiro {
 	public DiaRetiro(int id, int diaSemana, LocalTime horaDesde, LocalTime horaHasta, int intervalo) throws Exception {
 		this.id = id;
 		this.setDiaSemana(diaSemana);
-		this.horaDesde = horaDesde;
-		this.horaHasta = horaHasta;
+		this.setHoraDesde(horaDesde);
+		this.setHoraHasta(horaHasta);
 		this.setIntervalo(intervalo);
 	}
 
@@ -51,8 +51,11 @@ public class DiaRetiro {
 		return horaHasta;
 	}
 
-	public void setHoraHasta(LocalTime horaHasta) {
-		this.horaHasta = horaHasta;
+	public void setHoraHasta(LocalTime horaHasta) throws Exception {
+		if( horaHasta.isAfter(this.horaDesde) )
+			this.horaHasta = horaHasta;
+		else 
+			throw new Exception ("ERROR. La hora hasta no puede ser posterior a la hora desde.");
 	}
 
 	public int getIntervalo() {
@@ -69,8 +72,8 @@ public class DiaRetiro {
 	@Override
 	public String toString() {
 
-		return "DiaRetiro [id=" + id + ", diaSemana=" + diaSemana + ", horaDesde=" + horaDesde + ", horaHasta="
-				+ horaHasta + ", intervalo=" + intervalo + "]";
+		return "DiaRetiro id: " + id + ", diaSemana: " + diaSemana + ", horaDesde: " + horaDesde + ", horaHasta: "
+				+ horaHasta + ", intervalo: " + intervalo + "\n";
 	}
 
 	public boolean equals(DiaRetiro diaRetiro) {
