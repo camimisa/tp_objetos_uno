@@ -130,7 +130,7 @@ public class Test {
 		
 		try {
 			
-			Entrega entregaEnvioPrueba = new Envio(0,LocalDate.parse("2020-09-20"),true,LocalTime.parse("18:00"),
+			Entrega entregaEnvioPrueba = new Envio(0,LocalDate.parse("0000-09-20"),true,LocalTime.parse("18:00"),
 					LocalTime.parse("20:00"), clienteUno.getContacto().getUbicacion());
 			
 			Entrega entregaRetiroLocalPrueba = new RetiroLocal(0,LocalDate.parse("2020-09-09"),true);
