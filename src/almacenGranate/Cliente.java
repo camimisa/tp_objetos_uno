@@ -8,8 +8,8 @@ public class Cliente extends Actor {
 	private long dni;
 	private char sexo;
 
-	public Cliente(int id, Contacto contacto, String apellido, String nombre, long dni , char sexo) throws Exception {
-		super(id, contacto);
+	public Cliente(Contacto contacto, String apellido, String nombre, long dni , char sexo) throws Exception {
+		super(0, contacto);
 		this.setApellido(apellido);
 		this.setNombre(nombre);
 		this.setDni(dni);

@@ -26,6 +26,7 @@ public class Comercio extends Actor {
 		this.setCuit(cuit);
 		this.setCostoFijo(costoFijo);
 		this.setCostoPorKm(costoPorKm);
+		this.setDiaDescuento(diaDescuento);
 		this.setPorcentajeDescuentoDia(porcentajeDescuentoDia);
 		this.setPorcentajeDescuentoEfectivo(porcentajeDescuentoEfectivo);
 		this.lstDiaRetiro = new ArrayList<DiaRetiro>();
@@ -144,17 +145,16 @@ public class Comercio extends Actor {
 
 	@Override
 	public String toString() {
-		return "Comercio [nombreComercio=" + nombreComercio + ", cuit=" + cuit + ", costoFijo=" + costoFijo
-				+ ", costoPorKm=" + costoPorKm + ", diaDescuento=" + diaDescuento + ", porcentajeDescuentoDia="
-				+ porcentajeDescuentoDia + ", porcentajeDescuentoEfectivo=" + porcentajeDescuentoEfectivo
-				+ ", lstDiaRetiro=" + lstDiaRetiro + ", lstCarrito=" + lstCarrito + ",lstArticulo="+ lstArticulo +"]";
+		return "Comercio " + nombreComercio + "\n\nContacto: " + contacto + "\nInformacion:\nCosto Fijo de envio: " + costoFijo +
+					"\nCosto por km: " + costoPorKm + "\nDia de descuento: " + diaDescuento + " Porcentaje de descuento: " + porcentajeDescuentoDia +
+						"%\nPorcentaje descuento efectivo: " + porcentajeDescuentoEfectivo + "%\n";
 	}
 
 	// --------------------------------------TP---------------------------------------
 	
 	private int getIdCarrito() {
 		if (lstCarrito.size() == 0) {
-			return 0;
+			return 1;
 		}
 		else {
 			// Le suma 1 al ultimo id guardado en la lista.
@@ -172,7 +172,7 @@ public class Comercio extends Actor {
 		}
 	}
 	
-	public int getIdCliente() {
+	private int getIdCliente() {
 		// Busca el id de cliente mas grande de la lista de carrito y se le suma uno para asignarselo al proximo cliente.
 		int idCliente = 0;
 		if (lstCarrito.size() != 0) {
@@ -182,7 +182,7 @@ public class Comercio extends Actor {
 				}
 			}
 		}
-		return idCliente + 1;
+		return (idCliente + 1);
 	}
 	
 	@Override
@@ -322,7 +322,7 @@ public class Comercio extends Actor {
 		}
 	}
 	
-	private DiaRetiro traerDiaRetiro(LocalDate fecha) {
+	public DiaRetiro traerDiaRetiro(LocalDate fecha) {
 		boolean existe = false;
 		int i = 0;
 		DiaRetiro diaRetiro = null;
@@ -398,10 +398,18 @@ public class Comercio extends Actor {
 		
 	}
 	
-	public boolean agregarCarrito(LocalDate fecha, LocalTime hora, Cliente cliente, Entrega entrega) throws Exception {
+	public boolean agregarCarrito(LocalDate fecha, LocalTime hora, Cliente cliente, Entrega entrega) throws Exception {	
 		Carrito nuevoCarrito = new Carrito(getIdCarrito(), fecha, hora,cliente,entrega);
 		
 		if(this.carritoExiste(nuevoCarrito) == -1) {
+			if(cliente.getId() == 0 ) {
+				cliente.setId(this.getIdCliente());
+			}
+			if(entrega instanceof RetiroLocal) {
+				// Si selecciona como fecha de retiro un sabado o un domingo se le va a sumar dos dias al retiro.
+				if(traerDiaRetiro(fecha) == null)
+					entrega.setFecha(entrega.getFecha().plusDays(2));
+			}
 			nuevoCarrito.setComercio(this);
 			this.lstCarrito.add(nuevoCarrito);
 		}
@@ -416,6 +424,9 @@ public class Comercio extends Actor {
 		Carrito nuevoCarrito = new Carrito(getIdCarrito(), fecha, hora,cliente);
 		
 		if(this.carritoExiste(nuevoCarrito) == -1) {
+			if(cliente.getId() == 0 ) {
+				cliente.setId(this.getIdCliente());
+			}
 			nuevoCarrito.setComercio(this);
 			this.lstCarrito.add(nuevoCarrito);
 		}

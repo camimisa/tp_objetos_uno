@@ -42,7 +42,7 @@ public class Contacto {
 
 	@Override
 	public String toString() {
-		return "Contacto [email=" + email + ", celular=" + celular + ", ubicacion=" + ubicacion + "]";
+		return "\nemail: " + email + ", celular: " + celular + ", ubicacion: " + ubicacion;
 	}
 	
 	private boolean validarEmail(String email) {

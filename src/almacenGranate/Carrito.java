@@ -111,7 +111,11 @@ public class Carrito {
 	}
 
 	public void setEntregaRetiroLocal(LocalDate fecha, boolean efectivo) {
-		this.entrega = new RetiroLocal(this.id, fecha, efectivo);
+		if(comercio.traerDiaRetiro(fecha) != null)
+			this.entrega = new RetiroLocal(this.id, fecha, efectivo);
+		else
+			this.entrega = new RetiroLocal(this.id, fecha.plusDays(2), efectivo);
+		// Si selecciona como fecha de retiro un sabado o un domingo se le va a sumar dos dias al retiro.
 	}
 	
 	public Comercio getComercio() {
@@ -125,7 +129,7 @@ public class Carrito {
 	@Override
 	public String toString() {
 		
-		String separacion = "\n--------------------------------------------------------\n";
+		String separacion = "\n-------------------------------------------------------------------------------------\n";
 		
 		double totalAPagar = this.totalAPagarCarrito();
 		
@@ -268,7 +272,7 @@ public class Carrito {
 	}
 	
 	public double totalAPagarCarrito() {
-		
+
 		this.setDescuento(this.calcularDescuentoCarrito(comercio.getDiaDescuento(), 
 				comercio.getPorcentajeDescuentoDia(), comercio.getPorcentajeDescuentoEfectivo()));
 		
@@ -326,7 +330,6 @@ public class Carrito {
 	}
 	
 	public double calcularDescuentoDia(int diaDescuento, double porcentajeDescuento) {
-		
 		int productosAplicarDesc; //Variable para almacenar la cantidad de productos de cada item
 		double descuento = 0;
 		int diaCarrito = this.fecha.getDayOfWeek().getValue(); //Obtengo el dia de la semana donde se creo el carrito
@@ -364,7 +367,7 @@ public class Carrito {
 		if(descuentoEfectivo > descuentoDia) {
 			descuentoMayor = descuentoEfectivo;
 		}
-		
+
 		return descuentoMayor;
 	}
 	
