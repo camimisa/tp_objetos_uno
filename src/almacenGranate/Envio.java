@@ -11,8 +11,8 @@ public class Envio extends Entrega{
 	
 	public Envio(int id, LocalDate fecha, boolean efectivo, LocalTime horaDesde, LocalTime horaHasta, Ubicacion ubicacion) {
 		super(id, fecha, efectivo);
-		this.horaHasta = horaHasta;
 		this.horaDesde = horaDesde;
+		this.horaHasta = horaHasta;
 		this.costo = 0;
 		this.ubicacion = ubicacion;
 	}
@@ -51,7 +51,7 @@ public class Envio extends Entrega{
 
 	@Override
 	public String toString() {
-		return "Envio: Costo: " + costo + " Fecha de llegada: " + fecha + " Entre: " + horaDesde + " - " + horaHasta;
+		return "Envio\tCosto: " + costo + " Fecha de llegada: " + fecha + " Entre: " + horaDesde + " - " + horaHasta;
 	}
 	
 	// Calcular distancia
@@ -65,14 +65,13 @@ public class Envio extends Entrega{
 						Math.cos(Math.toRadians(lat2));
 		double va2 = 2 * Math.atan2(Math.sqrt(va1), Math.sqrt(1 - va1));
 		return Math.round(radioTierra * va2);
-		}
+	}
 
 	public void setCosto(Ubicacion ubicacion, double costoFijo, double costoPorKm) {
 		// costo lo igualo el costo total del Costo fijo mas el costo de envio
 		double costoDistancia = this.distanciaCoord(ubicacion.getLatitud(), ubicacion.getLongitud(), 
 				this.ubicacion.getLatitud(), this.ubicacion.getLongitud());
 		this.costo=(costoDistancia*costoPorKm) + costoFijo;
-
 	}
 
 }
