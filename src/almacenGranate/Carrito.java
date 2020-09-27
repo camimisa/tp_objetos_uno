@@ -125,11 +125,14 @@ public class Carrito {
 	@Override
 	public String toString() {
 		
+		String separacion = "\n--------------------------------------------------------\n";
+		
 		double totalAPagar = this.totalAPagarCarrito();
 		
-		String texto = "\nCarrito nº " + id + " fecha: " + fecha + " " + hora + "\nCliente: " + cliente +
+		String texto = separacion + "\nCarrito nº " + id + " fecha: " + fecha + " " + hora + "\nCliente: " + cliente +
 				"\nPRODUCTOS:\nID\tNOMBRE\t\tPRECIO  CODBARRAS\t CANTIDAD\tSUBTOTAL\n" + lstItemCarrito.toString().replace("[","").replace("]","").replace(",", "").replace(" ", "")+ 
 				"\nTotal: " + this.calcularTotal() + "\nDescuento: " + this.descuento + "\nTotal a pagar: " + totalAPagar; 
+		
 		if(this.verificarEntregaVacia()) {
 			if(entrega instanceof Envio) {
 				texto += "\n" + ((Envio)entrega).toString();
@@ -138,7 +141,8 @@ public class Carrito {
 				texto += "\n\n\tFecha de retiro: " + entrega.getFecha()  + " " + ((RetiroLocal) entrega).getHoraEntrega();
 			}
 		}
-
+		texto += separacion;
+		
 		return texto;
 	}
 	
@@ -299,7 +303,9 @@ public class Carrito {
 				try {
 					gastosEnvio = this.setCostoEntrega();
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					((Envio)entrega).setHoraDesde(null);
+					((Envio)entrega).setHoraHasta(null);
+					((Envio)entrega).setFecha(null);
 					System.out.println("\nCarrito nº " + this.id + " No podra recibir su pedido porque ingreso una fecha de envio invalida.\n"
 							+ "Para solucionar este problema comuniquese con servicio de atencion al cliente.");
 					((Envio)entrega).setCosto(0);
@@ -307,7 +313,7 @@ public class Carrito {
 			}
 			else {
 				try {
-					this.setHoraEntrega(this.fecha);
+					this.setHoraEntrega(this.entrega.getFecha());
 				}
 				catch(Exception e){
 					((RetiroLocal) entrega).setHoraEntrega(null);
@@ -358,9 +364,6 @@ public class Carrito {
 		if(descuentoEfectivo > descuentoDia) {
 			descuentoMayor = descuentoEfectivo;
 		}
-		
-		//TODO: no se si esto va aca
-		this.setDescuento(descuentoMayor);
 		
 		return descuentoMayor;
 	}

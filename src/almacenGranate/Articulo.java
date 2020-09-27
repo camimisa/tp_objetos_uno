@@ -61,8 +61,12 @@ public class Articulo {
 		
 		String espacios = "\t\t";
 		
-		if(nombre.length() > 7) {
+		if(nombre.length() > 9) {
 			espacios = "\t";
+		}
+		
+		if (nombre.length() > 13) {
+			nombre = nombre.substring(0, 13);
 		}
 		
 		return id + "\t" + nombre + "" + espacios + "" + precio + "\t" + codBarras;

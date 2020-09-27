@@ -100,15 +100,21 @@ public class Test {
 		}
 		
 		System.out.println(comercio.getLstDiaRetiro());
-		
-		// Lista para almacenar los clientes que van comprando en el comercio.
-		List <Cliente> listaClientes = new ArrayList<Cliente>();
 				
 		comercio.agregarArticulo("Cafe", "7613035068391", 20.0);
 		comercio.agregarArticulo("Pescado", "8456789012345", 80.0);
 		comercio.agregarArticulo("Arroz", "7613088888397", 30.0);
 		comercio.agregarArticulo("Pan lactal", "7613123468393", 100.0);
 		comercio.agregarArticulo("Manteca", "7613025036393", 90.0);
+		comercio.agregarArticulo("Te", "7790150250327", 50.0);
+		comercio.agregarArticulo("Te Limon", "7790150240274", 70.0);
+		comercio.agregarArticulo("Mermelada durazno", "7795184119756", 100.0);
+		comercio.agregarArticulo("Polenta", "7790580660000", 40.0);
+		comercio.agregarArticulo("Nesquik", "7613034453600", 100.0);
+		comercio.agregarArticulo("Edulcorante", "7794940000826", 150.0);
+		comercio.agregarArticulo("Leche en polvo", "7796613019784", 200.0);
+		comercio.agregarArticulo("Galletas arroz", "7798142710019", 40.0);
+		comercio.agregarArticulo("Levite pera", "7798062548655", 60.0);
 		
 		//Pruebas CRUD de lista de articulo
 		
@@ -121,10 +127,11 @@ public class Test {
 		
 		//System.out.println(comercio.getLstArticulo());
 				
-		Cliente clienteUno = new Cliente(listaClientes.size(),new Contacto("cliente_uno@gmail.com","1134274702",
+		Cliente clienteUno = new Cliente(comercio.getIdCliente(),new Contacto("cliente_uno@gmail.com","1134274702",
 								new Ubicacion(-34.803349, -58.448702)),"Garcia Misa","Camila",43182591L,'f');
+
 		
-		listaClientes.add(clienteUno);
+		//listaClientes.add(clienteUno);
 		
 		// TODO: PRUEBAS DE ENVIO Y RETIRO -- las fechas deben ser el mismo dia o dias posteriores a la compra del carrito
 		
@@ -147,50 +154,68 @@ public class Test {
 		// Probando entrega de tipo retiro local
 		Entrega entregaRetiroLocal = new RetiroLocal(0,LocalDate.parse("2020-09-09"),true);
 		
-		comercio.agregarCarrito(LocalDate.parse("2020-09-09"), LocalTime.parse("18:09"), 0, clienteUno);
+		
+
+
+		comercio.agregarCarrito(LocalDate.parse("2020-09-09"), LocalTime.parse("18:09"), clienteUno);
+
 		
 		Carrito carritoUno = comercio.traerCarrito(comercio.getLstCarrito().get(0).getId());
-		carritoUno.setEntregaRetiroLocal(LocalDate.parse("2020-09-09"), false);
+		carritoUno.setEntregaRetiroLocal(LocalDate.parse("2020-09-17"), false);
+		
 		carritoUno.agregar(comercio.traerArticulo(1), 2);
 		carritoUno.agregar(comercio.traerArticulo(2), 3);
 		carritoUno.agregar(comercio.traerArticulo(3), 5);
-		 ///*ERROR. cantidad no valida:*/ carritoUno.agregar(comercio.traerArticulo(3), -4);
-		 
-		 // al imprimir todo el contenido del carrito uno se cierra el pedido.
-		 System.out.println(carritoUno);
+		carritoUno.agregar(comercio.traerArticulo(6), 1);
+		carritoUno.agregar(comercio.traerArticulo(6), 4);
+		carritoUno.eliminarItemCarrito(comercio.traerArticulo(1));
+		carritoUno.modificarItemCarrito(2, 7);
+		
+		///*ERROR. cantidad no valida:*/ carritoUno.agregar(comercio.traerArticulo(3), -4);
+		// /*Eliminar itemCarrito con un articulo inexistente. */ carritoUno.eliminarItemCarrito(comercio.traerArticulo(17)); 
+		
+		// al imprimir todo el contenido del carrito uno se cierra el pedido.
+		System.out.println(carritoUno);
 		 
 
 		 // prueba de modificar cosas despues de que se cerro el pedido:
 		 /*
-		 carritoUno.agregar(listaArticulos.get(2), 3);
-		 carritoUno.agregar(comercio.traerArticulo(4), 3);		 
-		 System.out.println(separacionPrueba);		 
+		 carritoUno.agregar(comercio.traerArticulo(2), 3);
+		 carritoUno.agregar(comercio.traerArticulo(4), 3);		 	 
 		 carritoUno.eliminarItemCarrito(comercio.traerArticulo(4));		 
-		 carritoUno.modificarItemCarrito(2, 7);
-		 carritoUno.eliminarItemCarrito(listaArticulos.get(0));
+		 carritoUno.eliminarItemCarrito(comercio.traerArticulo(0));
 		 */
-
-		 //carritoUno.eliminarItemCarrito(listaArticulos.get(0));	 		 
-		//comercio.eliminarArticulo(2);
-		//System.out.println(comercio.traerArticulo(2));
-		 
+		
+		
+		Cliente clienteDos = new Cliente(comercio.getIdCliente(),new Contacto("cliente_dos@gmail.com","1134274555",
+					new Ubicacion(-34.814627, -58.469636)),"Granda","Damian",43182591L,'m');
+		
 		 try {
-			 Entrega entregaRetiroLocal2 = new RetiroLocal(1,LocalDate.parse("2020-09-17"),false); 
-			 comercio.agregarCarrito(LocalDate.parse("2020-09-16"), LocalTime.parse("19:00"), 0, clienteUno, entregaRetiroLocal2);
+			 // fecha invalida (fecha anterior al inicio del carrito)
+			 //Entrega entregaEnvio2 = new Envio(clienteDos.getId(), LocalDate.parse("2020-09-15"), true, LocalTime.parse("18:09"), LocalTime.parse("00:00"), ubicacion);
+			 Entrega entregaEnvio2 = new Envio(clienteDos.getId(), LocalDate.parse("2020-09-20"), true, LocalTime.parse("18:09"), LocalTime.parse("00:00"), clienteDos.getContacto().getUbicacion());
+			 //Entrega entregaRetiroLocal2 = new RetiroLocal(1,LocalDate.parse("2020-09-17"),true); 
+			 comercio.agregarCarrito(LocalDate.parse("2020-09-16"), LocalTime.parse("19:00"), clienteDos, entregaEnvio2);
 				
 			Carrito carritoDos = comercio.traerCarrito(comercio.getLstCarrito().get(1).getId());
 			
 			carritoDos.agregar(comercio.traerArticulo(1), 2);
 			carritoDos.agregar(comercio.traerArticulo(2), 3);
 			carritoDos.agregar(comercio.traerArticulo(3), 5);
-		
+			carritoDos.agregar(comercio.traerArticulo(13), 5);
+			carritoDos.agregar(comercio.traerArticulo(4), 1);
+			carritoDos.agregar(comercio.traerArticulo(5), 1);
+			carritoDos.agregar(comercio.traerArticulo(6), 1);
+			carritoDos.agregar(comercio.traerArticulo(7), 1);
+			carritoDos.agregar(comercio.traerArticulo(8), 1);
+			carritoDos.agregar(comercio.traerArticulo(9), 1);
 			System.out.println(carritoDos);
 			
 		 } catch(Exception e) {
 			 System.out.println(e);
 		 }
 		 
-		
+		 System.out.println("\nAgenda de turnos:\n"+ comercio.generarAgenda(carritoUno.getEntrega().getFecha()));
 	}
 
 }

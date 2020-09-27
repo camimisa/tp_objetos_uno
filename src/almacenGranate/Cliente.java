@@ -56,7 +56,7 @@ public class Cliente extends Actor {
 
 	@Override
 	public String toString() {
-		return "" + apellido + " " + nombre + " dni: " + dni + "\n";
+		return id +" " + apellido + " " + nombre + " dni: " + dni + "\n";
 	}
 	
 	private boolean validarNombreApellido(String nombre) throws Exception {
