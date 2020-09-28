@@ -158,7 +158,7 @@ public class Test {
 		
 		
 		Cliente clienteDos = new Cliente(new Contacto("cliente_dos@gmail.com","1134274555",
-					new Ubicacion(-34.814627, -58.469636)),"Granda","Damian",43182591L,'m');
+					new Ubicacion(-34.814627, -58.469636)),"Granda","Damian",42591256L,'m');
 		
 		 try {
 			 // fecha invalida (fecha anterior al inicio del carrito)
