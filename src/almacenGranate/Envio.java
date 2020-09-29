@@ -38,7 +38,7 @@ public class Envio extends Entrega{
 	}
 
 	public void setCosto(double costo) {
-		if(costo < 0 ) {
+		if(costo > 0 ) {
 		this.costo = costo;}
 		else { 
 			this.costo=0;
