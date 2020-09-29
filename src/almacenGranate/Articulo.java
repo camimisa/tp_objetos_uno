@@ -37,10 +37,10 @@ public class Articulo {
 	}
 
 	public void setCodBarras(String codBarras) throws Exception {
-		if(this.validarCodBarras(codBarras))
-			this.codBarras = codBarras;
-		else
-			throw new Exception("ERROR. Codigo de barras incorrecto.");
+		if(!this.validarCodBarras(codBarras)) throw new Exception("ERROR. Codigo de barras incorrecto.");
+			
+		this.codBarras = codBarras;
+					
 	}
 
 	public double getPrecio() {
@@ -48,11 +48,11 @@ public class Articulo {
 	}
 
 	public void setPrecio(double precio) {
+		
+		this.precio = 0;
+		
 		if(precio >= 0) {
 			this.precio = precio;
-		}
-		else {
-			this.precio = 0;
 		}
 	}
 
@@ -73,10 +73,13 @@ public class Articulo {
 	}
 
 	public boolean equals(Articulo articulo) {
+		
+		boolean flag = false;
+		
 		if(this.codBarras == articulo.getCodBarras())
-			return true;
-		else 
-			return false;
+			flag = true;
+		
+		return flag;
 	}
 	
 	private boolean validarCodBarras(String codBarras) throws Exception {
@@ -85,19 +88,19 @@ public class Articulo {
         int finalSumaCogBarras = 0;
         int digitoVerificador;
         
-        if (Pattern.matches("[0-9]{13}", codBarras)) { // SI EL COD TIENE 13 DIGITOS ENTRE EN EL IF
-            for (int i = 0 ; i < codBarras.length() - 1; i++) {// HAGO UN FOR RECORRIENDO 12
-                if (i % 2 != 0) {// SI ES IMPAR
-                    sumaCodBarras += (Character.getNumericValue(codBarras.charAt(i)) * 3);
-                }
-                else { // SI ES PAR
-                	sumaCodBarras += (Character.getNumericValue(codBarras.charAt(i)));
-                }
+        
+        
+        if (!Pattern.matches("[0-9]{13}", codBarras)) throw new Exception("Error: el codigo de barras tiene que tener 13 digitos"); // SI EL COD TIENE 13 DIGITOS ENTRE EN EL IF
+        
+        for (int i = 0 ; i < codBarras.length() - 1; i++) {// HAGO UN FOR RECORRIENDO 12
+            if (i % 2 != 0) {// SI ES IMPAR
+                sumaCodBarras += (Character.getNumericValue(codBarras.charAt(i)) * 3);
+            }
+            else { // SI ES PAR
+            	sumaCodBarras += (Character.getNumericValue(codBarras.charAt(i)));
             }
         }
-        else {
-        	throw new Exception("Error: el codigo de barras tiene que tener 13 digitos");
-        }
+        
         if( sumaCodBarras%10 == 0 ) {
         	finalSumaCogBarras = sumaCodBarras;
         }
@@ -106,13 +109,13 @@ public class Articulo {
             multiploDeDiez++;
             finalSumaCogBarras = multiploDeDiez * 10;
         }
+        
         digitoVerificador = finalSumaCogBarras - sumaCodBarras;
-        if (digitoVerificador == Character.getNumericValue(codBarras.charAt(codBarras.length() - 1))) {// VERIFICA EL ULTIMO DIGITO
-            return true;
+        if (digitoVerificador != Character.getNumericValue(codBarras.charAt(codBarras.length() - 1))) {// VERIFICA EL ULTIMO DIGITO
+        	throw new Exception("Error: el ultimo digito es invalido");
         } 
-        else {
-            throw new Exception("Error: el ultimo digito es invalido");
-        }
+        
+        return true;
 	}
 
 }
