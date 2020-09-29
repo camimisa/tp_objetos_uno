@@ -153,23 +153,19 @@ public class Comercio extends Actor {
 	// --------------------------------------TP---------------------------------------
 	
 	private int getIdCarrito() {
-		if (lstCarrito.size() == 0) {
-			return 1;
+		int id = 1;
+		if (lstCarrito.size() != 0) {
+			id = lstCarrito.get(lstCarrito.size()-1).getId() + 1;
 		}
-		else {
-			// Le suma 1 al ultimo id guardado en la lista.
-			return lstCarrito.get(lstCarrito.size()-1).getId() + 1;
-		}
+		return id;
 	}
 	
 	private int getIdDiaRetiro() {
-		if (lstDiaRetiro.size() == 0) {
-			return 1;
+		int id = 1;
+		if (lstDiaRetiro.size() != 0) {
+			id = lstDiaRetiro.get(lstDiaRetiro.size()-1).getId() + 1;
 		}
-		else {
-			// Le suma 1 al ultimo id guardado en la lista.
-			return lstDiaRetiro.get(lstDiaRetiro.size()-1).getId() + 1;
-		}
+		return id;
 	}
 	
 	private int getIdCliente() {
@@ -190,9 +186,7 @@ public class Comercio extends Actor {
 		
 		String cuitString = String.valueOf(identificador);
 		
-		if(cuitString.length() != 11) {
-			throw new Exception ("ERROR. Cuit invalido : la cantidad de digitos debe ser 11.");
-		}
+		if(cuitString.length() != 11) throw new Exception ("ERROR. Cuit invalido : la cantidad de digitos debe ser 11.");
 		
 		int suma,ultimoNumero=0;
 		String primerParte = cuitString.substring(0,2);
@@ -205,10 +199,8 @@ public class Comercio extends Actor {
 		
 		ultimoNumero = 11 - suma%11;
 		
-		if(Character.getNumericValue(tercerParte) != ultimoNumero) {
-			throw new Exception ("ERROR. Cuit invalido : ultimo digito incorrecto.");
-		}
-		
+		if(Character.getNumericValue(tercerParte) != ultimoNumero) throw new Exception ("ERROR. Cuit invalido : ultimo digito incorrecto.");
+
 		return true;
 	}
 	
@@ -313,13 +305,9 @@ public class Comercio extends Actor {
 	public boolean agregarDiaRetiro(int diaSemana, LocalTime horaDesde, LocalTime horaHasta, int intervalo) throws Exception {
 		DiaRetiro nuevoRetiro = new DiaRetiro(getIdDiaRetiro(),diaSemana,horaDesde,horaHasta,intervalo);
 		
-		if(this.diaRetiroExiste(nuevoRetiro) == -1) {
-			this.lstDiaRetiro.add(nuevoRetiro);
-			return true;
-		}
-		else {
-			throw new Exception ("ERROR. El dia de retiro ya existe");
-		}
+		if(this.diaRetiroExiste(nuevoRetiro) != -1) throw new Exception ("ERROR. El dia de retiro ya existe");
+		
+		return this.lstDiaRetiro.add(nuevoRetiro);
 	}
 	
 	public DiaRetiro traerDiaRetiro(LocalDate fecha) {
@@ -369,72 +357,57 @@ public class Comercio extends Actor {
 		return pos;
 	}
 	
-	public boolean eliminarDiaRetiro(int id) {
+	public boolean eliminarDiaRetiro(int id) throws Exception {
 		
 		DiaRetiro diaRetiroAEliminar = this.traerDiaRetiro(id);
 		
 		int pos = this.diaRetiroExiste(diaRetiroAEliminar);
 		
-		if ( pos != -1 ) {
-			lstDiaRetiro.remove(pos);
-			return true;
-		}
+		if ( pos == -1 ) throw new Exception ("ERROR. No existe el dia retiro que se quiere eliminar.");
 		
-		return false;
+		lstDiaRetiro.remove(pos);
+		return true;
 	}
 	
 	public boolean modificarDiaRetiro(int diaSemana, LocalTime horaDesde, LocalTime horaHasta, int intervalo) throws Exception {
 		DiaRetiro diaRetiroModificado = this.traerDiaRetiro(diaSemana);
 		
-		if ( diaRetiroModificado != null ) {
-			diaRetiroModificado.setHoraDesde(horaDesde);
-			diaRetiroModificado.setHoraHasta(horaHasta);
-			diaRetiroModificado.setIntervalo(intervalo);
-			return true;
-		}
-		else {
-			throw new Exception ("ERROR. El dia de retiro seleccionado no existe.");
-		}
+		if ( diaRetiroModificado == null ) throw new Exception ("ERROR. El dia de retiro seleccionado no existe.");
 		
+		diaRetiroModificado.setHoraDesde(horaDesde);
+		diaRetiroModificado.setHoraHasta(horaHasta);
+		diaRetiroModificado.setIntervalo(intervalo);
+		return true;
 	}
 	
 	public boolean agregarCarrito(LocalDate fecha, LocalTime hora, Cliente cliente, Entrega entrega) throws Exception {	
 		Carrito nuevoCarrito = new Carrito(getIdCarrito(), fecha, hora,cliente,entrega);
 		
-		if(this.carritoExiste(nuevoCarrito) == -1) {
-			if(cliente.getId() == 0 ) {
-				cliente.setId(this.getIdCliente());
-			}
-			if(entrega instanceof RetiroLocal) {
-				// Si selecciona como fecha de retiro un sabado o un domingo se le va a sumar dos dias al retiro.
-				if(traerDiaRetiro(fecha) == null)
-					entrega.setFecha(entrega.getFecha().plusDays(2));
-			}
-			nuevoCarrito.setComercio(this);
-			this.lstCarrito.add(nuevoCarrito);
-		}
-		else {
-			throw new Exception ("ERROR. El carrito ya existe");
-		}
+		if(this.carritoExiste(nuevoCarrito) != -1) throw new Exception ("Error. El carrito que se quiere agregar ya existe.");
 		
-		return false;
+		if(cliente.getId() == 0 ) {
+			cliente.setId(this.getIdCliente());
+		}
+		if(entrega instanceof RetiroLocal) {
+			// Si selecciona como fecha de retiro un sabado o un domingo se le va a sumar dos dias al retiro.
+			if(traerDiaRetiro(fecha) == null)
+				entrega.setFecha(entrega.getFecha().plusDays(2));
+		}
+		nuevoCarrito.setComercio(this);
+		return this.lstCarrito.add(nuevoCarrito);
 	}
 	
 	public boolean agregarCarrito(LocalDate fecha, LocalTime hora, Cliente cliente) throws Exception {
 		Carrito nuevoCarrito = new Carrito(getIdCarrito(), fecha, hora,cliente);
 		
-		if(this.carritoExiste(nuevoCarrito) == -1) {
-			if(cliente.getId() == 0 ) {
-				cliente.setId(this.getIdCliente());
-			}
-			nuevoCarrito.setComercio(this);
-			this.lstCarrito.add(nuevoCarrito);
+		if(this.carritoExiste(nuevoCarrito) != -1) throw new Exception ("ERROR. El carrito ya existe");
+		// Aca no agrego el if del otro metodo sobrecargado porque se usa el set de retiro y ahi se verifica lo
+		// mismo que en el anterior.
+		if(cliente.getId() == 0 ) {
+			cliente.setId(this.getIdCliente());
 		}
-		else {
-			throw new Exception ("ERROR. El carrito ya existe");
-		}
-		
-		return false;
+		nuevoCarrito.setComercio(this);
+		return this.lstCarrito.add(nuevoCarrito);
 	}
 	
 	public Carrito traerCarrito(int id) {
@@ -490,28 +463,22 @@ public class Comercio extends Actor {
 		
 		int pos = this.carritoExiste(carritoAEliminar);
 		
-		if ( pos != -1 ) {
-			lstCarrito.remove(pos);
-			return true;
-		}
-		else {
-			throw new Exception ("ERROR. No se pudo eliminar el carrito");
-		}
+		if ( pos == -1 ) throw new Exception ("ERROR. No se pudo eliminar el carrito");
 		
+		lstCarrito.remove(pos);
+		return true;
 	}
-	
-	
+
 	
 	/*CRUD ARTICULOS*/
 	
 	private int getIdArticulo() {
-		if (lstArticulo.size() == 0) {
-			return 0;
-		}
-		else {
+		int id = 0;
+		if (lstArticulo.size() != 0) {
 			// Le suma 1 al ultimo id guardado en la lista.
-			return lstArticulo.get(lstArticulo.size()-1).getId() + 1;
+			id = lstArticulo.get(lstArticulo.size()-1).getId() + 1;
 		}
+		return id;
 	}
 	
 	public int articuloExiste(Articulo articulo) {
@@ -535,17 +502,13 @@ public class Comercio extends Actor {
 		
 		Articulo nuevoArticulo = new Articulo(getIdArticulo(), nombre,codBarras,precio);
 		
-		if(this.articuloExiste(nuevoArticulo) == -1) {
-			this.lstArticulo.add(nuevoArticulo);
-		}
-		else {
-			throw new Exception ("ERROR. El articulo ya existe");
-		}
+		if(this.articuloExiste(nuevoArticulo) != -1) throw new Exception ("ERROR. El articulo ya existe");
 		
-		return false;
+		return this.lstArticulo.add(nuevoArticulo);
+
 	}
 	
-	public Articulo traerArticulo(int id)throws Exception {
+	public Articulo traerArticulo(int id) throws Exception {
 		boolean existe = false;
 		int i = 0;
 		Articulo articulo = null;
@@ -568,14 +531,10 @@ public class Comercio extends Actor {
 
 		int pos = this.articuloExiste(articuloAEliminar);
 		
-		if ( pos != -1 ) {
-			lstArticulo.remove(pos);
-			return true;
-		}
-		else {
-			throw new Exception ("ERROR. No se pudo eliminar el articulo");
-		}
+		if ( pos == -1 ) throw new Exception ("ERROR. No se pudo eliminar el articulo");
+		lstArticulo.remove(pos);
 		
+		return true;
 	}
 		
 }

@@ -175,7 +175,7 @@ public class Test {
 		///*ERROR. cantidad no valida:*/ carritoUno.agregar(comercio.traerArticulo(3), -4);
 		// /*Eliminar itemCarrito con un articulo inexistente. */ carritoUno.eliminarItemCarrito(comercio.traerArticulo(17)); 
 		
-		System.out.println("\n\nTEST CARRITO 1 (entrega: retiro local) : ");
+		System.out.println("\n\nTEST CARRITO 1 (entrega: retiro local) :\nDescuento: ninguno.");
 		// al imprimir todo el contenido del carrito uno se cierra el pedido.
 		System.out.println(carritoUno);
 		 
@@ -211,7 +211,7 @@ public class Test {
 			carritoDos.agregar(comercio.traerArticulo(7), 1);
 			carritoDos.agregar(comercio.traerArticulo(8), 1);
 			carritoDos.agregar(comercio.traerArticulo(9), 1);
-			System.out.println("TEST CARRITO 2 (entrega: envio) : ");
+			System.out.println("TEST CARRITO 2 (entrega: envio) :\nDescuento: efectivo.");
 			System.out.println(carritoDos);
 			
 		 } catch(Exception e) {
@@ -237,7 +237,7 @@ public class Test {
 			carritoTres.agregar(comercio.traerArticulo(5), 6);
 			carritoTres.agregar(comercio.traerArticulo(11), 4);
 
-			System.out.println("TEST CARRITO 3 (entrega: retirolocal) : ");
+			System.out.println("TEST CARRITO 3 (entrega: retirolocal) :\nDescuento: dia descuento comercio.");
 			System.out.println(carritoTres);
 			
 		 } catch(Exception e) {
@@ -263,7 +263,7 @@ public class Test {
 			carritoCuatro.agregar(comercio.traerArticulo(0), 6);
 			carritoCuatro.agregar(comercio.traerArticulo(11), 4);
 
-			System.out.println("TEST CARRITO 4 (entrega: retirolocal) : ");
+			System.out.println("TEST CARRITO 4 (entrega: retirolocal) :\nDescuento: dia descuento comercio Y efectivo.");
 			System.out.println(carritoCuatro);
 			
 		 } catch(Exception e) {
@@ -286,14 +286,14 @@ public class Test {
 			carritoCinco.agregar(comercio.traerArticulo(5), 6);
 			carritoCinco.agregar(comercio.traerArticulo(11), 4);
 
-			System.out.println("TEST CARRITO 5 (entrega: envio) : ");
+			System.out.println("TEST CARRITO 5 (entrega: envio) :\nDescuento: ninguno.");
 			System.out.println(carritoCinco);
 			
 		 } catch(Exception e) {
 			 System.out.println(e);
 		 }
 		 
-		 System.out.println("\nAgenda de turnos now:\n"+ comercio.generarAgenda(carritoUno.getEntrega().getFecha()));
+		 System.out.println("\nAgenda de turnos " + LocalDate.now() +" :\n"+ comercio.generarAgenda(carritoUno.getEntrega().getFecha()));
 		 System.out.println("\nAgenda de turnos " + carritoTres.getEntrega().getFecha() + ":\n"+ comercio.generarAgenda(carritoTres.getEntrega().getFecha()));
 	}
 
