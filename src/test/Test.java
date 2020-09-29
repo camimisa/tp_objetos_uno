@@ -126,8 +126,40 @@ public class Test {
 				
 		Cliente clienteUno = new Cliente(new Contacto("cliente_uno@gmail.com","1134274702",
 								new Ubicacion(-34.803349, -58.448702)),"Garcia Misa","Camila",43182591L,'f');
+
+
 		
+		//listaClientes.add(clienteUno);
+		
+		// TODO: PRUEBAS DE ENVIO Y RETIRO -- las fechas deben ser el mismo dia o dias posteriores a la compra del carrito
+		
+		try {
+			
+			Entrega entregaEnvioPrueba = new Envio(0,LocalDate.parse("0000-09-20"),true,LocalTime.parse("18:00"),
+					LocalTime.parse("20:00"), clienteUno.getContacto().getUbicacion());
+			
+			Entrega entregaRetiroLocalPrueba = new RetiroLocal(0,LocalDate.parse("2020-09-09"),true);
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		// Probando entrega de tipo envio
+		Entrega entregaEnvio = new Envio(0,LocalDate.parse("2020-09-20"),true,LocalTime.parse("18:00"),
+				LocalTime.parse("20:00"), clienteUno.getContacto().getUbicacion());
+		
+		// Probando entrega de tipo retiro local
+		Entrega entregaRetiroLocal = new RetiroLocal(0,LocalDate.parse("2020-09-09"),true);
+		
+		
+
+
+		comercio.agregarCarrito(LocalDate.parse("2020-09-09"), LocalTime.parse("18:09"), clienteUno);
+
+
 		comercio.agregarCarrito(LocalDate.now(), LocalTime.parse("18:09"), clienteUno);
+
 		
 		Carrito carritoUno = comercio.traerCarrito(comercio.getLstCarrito().get(0).getId());
 		carritoUno.setEntregaRetiroLocal(LocalDate.now().plusDays(3), false);
@@ -143,7 +175,7 @@ public class Test {
 		///*ERROR. cantidad no valida:*/ carritoUno.agregar(comercio.traerArticulo(3), -4);
 		// /*Eliminar itemCarrito con un articulo inexistente. */ carritoUno.eliminarItemCarrito(comercio.traerArticulo(17)); 
 		
-		System.out.println("\n\nTEST CARRITO 1 (entrega: retiro local) : ");
+		System.out.println("\n\nTEST CARRITO 1 (entrega: retiro local) :\nDescuento: ninguno.");
 		// al imprimir todo el contenido del carrito uno se cierra el pedido.
 		System.out.println(carritoUno);
 		 
@@ -179,7 +211,7 @@ public class Test {
 			carritoDos.agregar(comercio.traerArticulo(7), 1);
 			carritoDos.agregar(comercio.traerArticulo(8), 1);
 			carritoDos.agregar(comercio.traerArticulo(9), 1);
-			System.out.println("TEST CARRITO 2 (entrega: envio) : ");
+			System.out.println("TEST CARRITO 2 (entrega: envio) :\nDescuento: efectivo.");
 			System.out.println(carritoDos);
 			
 		 } catch(Exception e) {
@@ -205,7 +237,7 @@ public class Test {
 			carritoTres.agregar(comercio.traerArticulo(5), 6);
 			carritoTres.agregar(comercio.traerArticulo(11), 4);
 
-			System.out.println("TEST CARRITO 3 (entrega: retirolocal) : ");
+			System.out.println("TEST CARRITO 3 (entrega: retirolocal) :\nDescuento: dia descuento comercio.");
 			System.out.println(carritoTres);
 			
 		 } catch(Exception e) {
@@ -231,7 +263,7 @@ public class Test {
 			carritoCuatro.agregar(comercio.traerArticulo(0), 6);
 			carritoCuatro.agregar(comercio.traerArticulo(11), 4);
 
-			System.out.println("TEST CARRITO 4 (entrega: retirolocal) : ");
+			System.out.println("TEST CARRITO 4 (entrega: retirolocal) :\nDescuento: dia descuento comercio Y efectivo.");
 			System.out.println(carritoCuatro);
 			
 		 } catch(Exception e) {
@@ -254,14 +286,14 @@ public class Test {
 			carritoCinco.agregar(comercio.traerArticulo(5), 6);
 			carritoCinco.agregar(comercio.traerArticulo(11), 4);
 
-			System.out.println("TEST CARRITO 5 (entrega: envio) : ");
+			System.out.println("TEST CARRITO 5 (entrega: envio) :\nDescuento: ninguno.");
 			System.out.println(carritoCinco);
 			
 		 } catch(Exception e) {
 			 System.out.println(e);
 		 }
 		 
-		 System.out.println("\nAgenda de turnos now:\n"+ comercio.generarAgenda(carritoUno.getEntrega().getFecha()));
+		 System.out.println("\nAgenda de turnos " + LocalDate.now() +" :\n"+ comercio.generarAgenda(carritoUno.getEntrega().getFecha()));
 		 System.out.println("\nAgenda de turnos " + carritoTres.getEntrega().getFecha() + ":\n"+ comercio.generarAgenda(carritoTres.getEntrega().getFecha()));
 	}
 

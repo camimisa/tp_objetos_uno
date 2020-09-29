@@ -31,12 +31,12 @@ public class DiaRetiro {
 	}
 
 	public void setDiaSemana(int diaSemana) throws Exception {
-		if( 0 < diaSemana && diaSemana < 8)
-			this.diaSemana = diaSemana;
-		else {
+		if( 0 > diaSemana && diaSemana > 8) {
 			this.diaSemana = 1;
-			throw new Exception ("ERROR. Dia se semana invalido");
+			throw new Exception ("ERROR. Dia de semana invalido");
 		}
+		
+		this.diaSemana = diaSemana;
 	}
 
 	public LocalTime getHoraDesde() {
@@ -52,10 +52,10 @@ public class DiaRetiro {
 	}
 
 	public void setHoraHasta(LocalTime horaHasta) throws Exception {
-		if( horaHasta.isAfter(this.horaDesde) )
-			this.horaHasta = horaHasta;
-		else 
-			throw new Exception ("ERROR. La hora hasta no puede ser posterior a la hora desde.");
+		
+		if( !horaHasta.isAfter(this.horaDesde) ) throw new Exception ("ERROR. La hora hasta no puede ser posterior a la hora desde.");
+			
+		this.horaHasta = horaHasta;		
 	}
 
 	public int getIntervalo() {

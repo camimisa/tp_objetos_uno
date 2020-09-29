@@ -40,8 +40,8 @@ public class Cliente extends Actor {
 	public void setDni(long dni) throws Exception{
 		//Validar dni espera un string para hacer la validacion, por eso lo tengo que castear.
 		if(!validarIdentificadorUnico(dni)) throw new Exception("ERROR. Dni invalido");
-		else this.dni = dni;
-
+		
+		this.dni = dni;
 	}
 	
 
