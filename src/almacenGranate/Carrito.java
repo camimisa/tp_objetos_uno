@@ -136,7 +136,7 @@ public class Carrito {
 		
 		double totalAPagar = this.totalAPagarCarrito();
 		
-		String texto = separacion + "\nCarrito nº " + id + " fecha: " + fecha + " " + hora + "\nCliente: " + cliente +
+		String texto = separacion + "\nCarrito nï¿½ " + id + " fecha: " + fecha + " " + hora + "\nCliente: " + cliente +
 				"\nPRODUCTOS:\nID\tNOMBRE\t\tPRECIO  CODBARRAS\t CANTIDAD\tSUBTOTAL\n" + lstItemCarrito.toString().replace("[","").replace("]","").replace(",", "").replace(" ", "")+ 
 				"\nTotal: " + this.calcularTotal() + "\nDescuento: " + this.descuento + "\nTotal a pagar: " + totalAPagar; 
 		
@@ -299,7 +299,7 @@ public class Carrito {
 		entregaVacia = this.verificarEntregaVacia();
 		double gastosEnvio = 0;
 		if(!entregaVacia) {
-			System.out.println("\nCarrito nº " + this.id + " No podra recibir su pedido porque NO ingreso un tipo de entrega.\n"
+			System.out.println("\nCarrito nï¿½ " + this.id + " No podra recibir su pedido porque NO ingreso un tipo de entrega.\n"
 					+ "Para solucionar este problema comuniquese con servicio de atencion al cliente.");
 		}
 		else {
@@ -310,7 +310,7 @@ public class Carrito {
 					((Envio)entrega).setHoraDesde(null);
 					((Envio)entrega).setHoraHasta(null);
 					((Envio)entrega).setFecha(null);
-					System.out.println("\nCarrito nº " + this.id + " No podra recibir su pedido porque ingreso una fecha de envio invalida.\n"
+					System.out.println("\nCarrito nï¿½ " + this.id + " No podra recibir su pedido porque ingreso una fecha de envio invalida.\n"
 							+ "Para solucionar este problema comuniquese con servicio de atencion al cliente.");
 					((Envio)entrega).setCosto(0);
 				}
@@ -321,7 +321,7 @@ public class Carrito {
 				}
 				catch(Exception e){
 					((RetiroLocal) entrega).setHoraEntrega(null);
-					System.out.println("\nCarrito nº " + this.id + " No podra retirar su pedido porque ingreso una fecha de retiro invalida.\n"
+					System.out.println("\nCarrito nï¿½ " + this.id + " No podra retirar su pedido porque ingreso una fecha de retiro invalida.\n"
 							+ "Para solucionar este problema comuniquese con servicio de atencion al cliente.");	
 				}	
 			}
@@ -375,32 +375,28 @@ public class Carrito {
 	private void setHoraEntrega(LocalDate fecha) throws Exception {	
 		
 		// Se verifica que la fecha de entrega sea el mismo dia del carrito o despues.
-		if( entrega.getFecha().isAfter(fecha) || entrega.getFecha().equals(fecha) ) {
+		if( !(entrega.getFecha().isAfter(fecha) || entrega.getFecha().equals(fecha)) ) throw new Exception("ERROR. La fecha de entrega no puede ser anterior a la fecha de compra del carrito.");
 			
-			List <LocalTime> horariosDisponibles = this.comercio.traerHoraRetiro(entrega.getFecha());
-			
-			//Generamos un numero random de posicion de la lista para asignarlo como hora de retiro
-			
-			int numeroPosRandom = (int)(Math.random()*( horariosDisponibles.size() - 1) );
-			
-			if(((RetiroLocal) entrega).getHoraEntrega() == null)
-				((RetiroLocal) entrega).setHoraEntrega(horariosDisponibles.get(numeroPosRandom));
-		}
-		else {
-			throw new Exception("ERROR. La fecha de entrega no puede ser anterior a la fecha de compra del carrito.");
-		}
+		List <LocalTime> horariosDisponibles = this.comercio.traerHoraRetiro(entrega.getFecha());
+		
+		//Generamos un numero random de posicion de la lista para asignarlo como hora de retiro
+		
+		int numeroPosRandom = (int)(Math.random()*( horariosDisponibles.size() - 1) );
+		
+		if(((RetiroLocal) entrega).getHoraEntrega() == null)
+			((RetiroLocal) entrega).setHoraEntrega(horariosDisponibles.get(numeroPosRandom));
+		
+		
 	}
 	
 	private double setCostoEntrega() throws Exception {
 		double costo = 0;
 		// Se verifica que la fecha de entrega sea el mismo dia del carrito o despues.
-		if( entrega.getFecha().isAfter(fecha) || entrega.getFecha().equals(fecha) ) {
-			((Envio) entrega).setCosto(comercio.getContacto().getUbicacion(),comercio.getCostoFijo(),comercio.getCostoPorKm());
-			costo = ((Envio) entrega).getCosto();
-		}
-		else {
-			throw new Exception("ERROR. La fecha de entrega no puede ser anterior a la fecha de compra del carrito.");
-		}
+		if( !(entrega.getFecha().isAfter(fecha) || entrega.getFecha().equals(fecha) )) throw new Exception("ERROR. La fecha de entrega no puede ser anterior a la fecha de compra del carrito.");
+		
+		((Envio) entrega).setCosto(comercio.getContacto().getUbicacion(),comercio.getCostoFijo(),comercio.getCostoPorKm());
+		costo = ((Envio) entrega).getCosto();
+	
 		return costo;
 	}
 }
