@@ -212,6 +212,7 @@ public class Comercio extends Actor {
 		}
 		
 		DiaRetiro diaRetiro = this.traerDiaRetiro(fecha);
+		if (diaRetiro == null) return null;
 		/* Calcula la cantidad de minutos que hay entre la primer hora de retiro hasta la ultima para despues poder
 		   dividirlo entre el intervalo de minutos de cada turno y asi da la cantidad de turnos que va a haber ese dia.
 		*/
@@ -327,7 +328,7 @@ public class Comercio extends Actor {
 		return diaRetiro;
 	}
 	
-	private DiaRetiro traerDiaRetiro(int id) {
+	public DiaRetiro traerDiaRetiro(int id) {
 		boolean existe = false;
 		int i = 0;
 		DiaRetiro diaRetiro = null;
@@ -340,6 +341,20 @@ public class Comercio extends Actor {
 			i++;
 		}
 		return diaRetiro;
+	}
+	
+	public LocalDate verificarFechaDiaRetiro(LocalDate fecha) {
+		// Este metodo se usara cuando el usuario ingrese una fecha de retiro donde no exista un dia de retiro. 
+		// Se generara una nueva fecha proxima al dia que se elegio.
+		boolean fechaValida = false;
+		while(!fechaValida) {
+			if(this.traerDiaRetiro(fecha) == null) 
+				fecha = fecha.plusDays(1);
+			else 
+				fechaValida = true;
+		}
+		
+		return fecha;
 	}
 	
 	private int diaRetiroExiste(DiaRetiro diaRetiro) {
@@ -389,9 +404,8 @@ public class Comercio extends Actor {
 			cliente.setId(this.getIdCliente());
 		}
 		if(entrega instanceof RetiroLocal) {
-			// Si selecciona como fecha de retiro un sabado o un domingo se le va a sumar dos dias al retiro.
-			if(traerDiaRetiro(fecha) == null)
-				entrega.setFecha(entrega.getFecha().plusDays(2));
+			// (Si el dia de retiro seleccionado el comercio no hace entregas entonces se le asigna el proximo dia que si haga entregas.)
+			entrega.setFecha(this.verificarFechaDiaRetiro(entrega.getFecha()));
 		}
 		nuevoCarrito.setComercio(this);
 		return this.lstCarrito.add(nuevoCarrito);
@@ -402,7 +416,20 @@ public class Comercio extends Actor {
 		
 		if(this.carritoExiste(nuevoCarrito) != -1) throw new Exception ("ERROR. El carrito ya existe");
 		// Aca no agrego el if del otro metodo sobrecargado porque se usa el set de retiro y ahi se verifica lo
-		// mismo que en el anterior.
+		// mismo que en el anterior. (Si el dia de retiro seleccionado el comercio no hace entregas entonces se le asigna el proximo dia que si haga entregas.)
+		if(cliente.getId() == 0 ) {
+			cliente.setId(this.getIdCliente());
+		}
+		nuevoCarrito.setComercio(this);
+		return this.lstCarrito.add(nuevoCarrito);
+	}
+	
+	public boolean agregarCarrito(Cliente cliente) throws Exception {
+		Carrito nuevoCarrito = new Carrito(getIdCarrito(), LocalDate.now(), LocalTime.now(),cliente);
+		
+		if(this.carritoExiste(nuevoCarrito) != -1) throw new Exception ("ERROR. El carrito ya existe");
+		// Aca no agrego el if del otro metodo sobrecargado porque se usa el set de retiro y ahi se verifica lo
+		// mismo que en el anterior. (Si el dia de retiro seleccionado el comercio no hace entregas entonces se le asigna el proximo dia que si haga entregas.)
 		if(cliente.getId() == 0 ) {
 			cliente.setId(this.getIdCliente());
 		}

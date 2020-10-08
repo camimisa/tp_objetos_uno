@@ -10,7 +10,7 @@ public abstract class Entrega {
 
 	public Entrega(int id, LocalDate fecha, boolean efectivo) {
 		this.id = id;
-		this.fecha = fecha;
+		this.setFecha(fecha);
 		this.efectivo = efectivo;
 	}
 
@@ -27,7 +27,13 @@ public abstract class Entrega {
 	}
 
 	public void setFecha(LocalDate fecha) {
-		this.fecha = fecha;
+		// La fecha maxima de retiro o de envio puede ser de 2 semanas.
+		LocalDate fechaMaxima = LocalDate.now().plusDays(14);
+		
+		if( fecha.isBefore(fechaMaxima) || fecha.equals(fechaMaxima) )
+			this.fecha = fecha;
+		else
+			this.fecha = fechaMaxima;
 	}
 
 	public boolean getEfectivo() {

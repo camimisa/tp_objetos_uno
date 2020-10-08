@@ -41,7 +41,7 @@ public class Envio extends Entrega{
 		if(costo > 0 ) {
 		this.costo = costo;}
 		else { 
-			this.costo=0;
+			this.costo = 0;
 		}
 	}
 
@@ -75,6 +75,7 @@ public class Envio extends Entrega{
 		// costo lo igualo el costo total del Costo fijo mas el costo de envio
 		double costoDistancia = this.distanciaCoord(ubicacion.getLatitud(), ubicacion.getLongitud(), 
 				this.ubicacion.getLatitud(), this.ubicacion.getLongitud());
+
 		this.costo=(costoDistancia*costoPorKm) + costoFijo;
 	}
 

@@ -128,8 +128,6 @@ public class Test {
 				System.out.println("Test agregando un dia con un numero invalido:");
 				System.out.println(e.getMessage());
 			}
-		
-		
 			comercio.agregarDiaRetiro(3, LocalTime.parse("08:00"), LocalTime.parse("18:00"), 90);
 			comercio.agregarDiaRetiro(4, LocalTime.parse("08:00"), LocalTime.parse("18:00"), 60);
 			comercio.agregarDiaRetiro(5, LocalTime.parse("08:00"), LocalTime.parse("18:00"), 100);
@@ -195,10 +193,10 @@ public class Test {
 		Cliente clienteUno = new Cliente(new Contacto("cliente_uno@gmail.com","1134274702",
 								new Ubicacion(-34.803349, -58.448702)),"Garcia Misa","Camila",43182591L,'f');
 
-		comercio.agregarCarrito(LocalDate.now(), LocalTime.parse("18:09"), clienteUno);
+		comercio.agregarCarrito(LocalDate.now(), LocalTime.now(), clienteUno);
 		
 		Carrito carritoUno = comercio.traerCarrito(comercio.getLstCarrito().get(0).getId());
-		carritoUno.setEntregaRetiroLocal(LocalDate.now().plusDays(3), false);
+		carritoUno.setEntregaRetiroLocal(LocalDate.now(), false);
 
 		carritoUno.agregar(comercio.traerArticulo(1), 2);
 		carritoUno.agregar(comercio.traerArticulo(2), 3);
@@ -251,7 +249,8 @@ public class Test {
 		
 			
 		Entrega entrega2 = new Envio(clienteDos.getId(), LocalDate.now().plusDays(2), true, LocalTime.parse("08:00"), LocalTime.parse("18:00"), clienteDos.getContacto().getUbicacion()); 
-		comercio.agregarCarrito(LocalDate.now(), LocalTime.now(), clienteDos, entrega2);
+		// Si se le asigna una fecha incorrecta se asignara el localDate.now() por defecto.
+		comercio.agregarCarrito(LocalDate.parse("2030-10-07"), LocalTime.now(), clienteDos, entrega2);
 			
 		Carrito carritoDos = comercio.traerCarrito(comercio.getLstCarrito().get(1).getId());
 		
@@ -274,10 +273,10 @@ public class Test {
 		Carrito carritoTres = null;
 		try {
 			 // Miercoles -> Dia del descuento del comercio.
-			comercio.agregarCarrito(LocalDate.parse("2020-09-23"), LocalTime.now(), clienteTres);
+			comercio.agregarCarrito(LocalDate.parse("2020-10-07"), LocalTime.now(), clienteTres);
 				
 			carritoTres = comercio.traerCarrito(comercio.getLstCarrito().get(2).getId());
-			carritoTres.setEntregaRetiroLocal(carritoTres.getFecha().plusDays(3), false);
+			carritoTres.setEntregaRetiroLocal(carritoTres.getFecha(), false);
 			
 			carritoTres.agregar(comercio.traerArticulo(10), 2);
 			carritoTres.agregar(comercio.traerArticulo(2), 3);
@@ -293,14 +292,14 @@ public class Test {
 		} catch(Exception e) {
 			 System.out.println(e);
 		}
-		
+		Carrito carritoCuatro = null;
 		try {		
 			Cliente clienteCuatro = new Cliente(new Contacto("juan@gmail.com", "1155554702",
 				new Ubicacion(-34.726595, -58.394265)),"Gonzales Canosa", "Juan Manuel", 41111111L,'M');
 			 // Miercoles -> Dia del descuento del comercio.
-			comercio.agregarCarrito(LocalDate.parse("2020-09-23"), LocalTime.now(), clienteCuatro);
+			comercio.agregarCarrito(LocalDate.parse("2020-10-07"), LocalTime.now(), clienteCuatro);
 				
-			Carrito carritoCuatro = comercio.traerCarrito(comercio.getLstCarrito().get(3).getId());
+			carritoCuatro = comercio.traerCarrito(comercio.getLstCarrito().get(3).getId());
 			carritoCuatro.setEntregaRetiroLocal(carritoCuatro.getFecha().plusDays(3), true);
 			
 			carritoCuatro.agregar(comercio.traerArticulo(13), 2);
@@ -319,7 +318,7 @@ public class Test {
 		}
 		
 		try {
-			comercio.agregarCarrito(LocalDate.now(), LocalTime.now(), clienteTres);
+			comercio.agregarCarrito(clienteTres);
 				
 			Carrito carritoCinco = comercio.traerCarrito(comercio.getLstCarrito().get(4).getId());
 			carritoCinco.setEntregaEnvio(carritoCinco.getFecha().plusDays(3), false, LocalTime.parse("09:00"), 
@@ -342,6 +341,7 @@ public class Test {
 		 
 		 System.out.println("\nAgenda de turnos " + carritoUno.getEntrega().getFecha() +" :\n"+ comercio.generarAgenda(carritoUno.getEntrega().getFecha()));
 		 System.out.println("\nAgenda de turnos " + carritoTres.getEntrega().getFecha() + ":\n"+ comercio.generarAgenda(carritoTres.getEntrega().getFecha()));
+		 System.out.println("\nAgenda de turnos " + carritoCuatro.getEntrega().getFecha() + ":\n"+ comercio.generarAgenda(carritoCuatro.getEntrega().getFecha()));
 	}
 
 }

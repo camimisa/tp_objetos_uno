@@ -19,7 +19,7 @@ public class Carrito {
 
 	public Carrito(int id, LocalDate fecha, LocalTime hora, Cliente cliente, Entrega entrega) {
 		this.id = id;
-		this.fecha = fecha;
+		this.setFecha(fecha);
 		this.hora = hora;
 		this.cerrado = false;
 		this.descuento = 0;
@@ -30,7 +30,7 @@ public class Carrito {
 
 	public Carrito(int id, LocalDate fecha, LocalTime hora, Cliente cliente) {
 		this.id = id;
-		this.fecha = fecha;
+		this.setFecha(fecha);
 		this.hora = hora;
 		this.cerrado = false;
 		this.descuento = 0;
@@ -52,7 +52,14 @@ public class Carrito {
 	}
 
 	public void setFecha(LocalDate fecha) {
-		this.fecha = fecha;
+		// permitimos que las fechas sean a partir del 6 de octubre para poder demostrar que funciona la fecha 
+		// de descuento que es un miercoles.
+		LocalDate fechaMinima = LocalDate.parse("2020-10-06");
+
+		if(fecha.isAfter(fechaMinima) && fecha.isBefore(LocalDate.now()))
+			this.fecha = fecha;
+		else
+			this.fecha = LocalDate.now();
 	}
 
 	public LocalTime getHora() {
@@ -117,7 +124,7 @@ public class Carrito {
 			this.entrega = new RetiroLocal(this.id, fecha, efectivo);
 		else		
 			// Si selecciona como fecha de retiro un sabado o un domingo se le va a sumar dos dias al retiro.
-			this.entrega = new RetiroLocal(this.id, fecha.plusDays(2), efectivo);
+			this.entrega = new RetiroLocal(this.id, comercio.verificarFechaDiaRetiro(fecha), efectivo);
 
 	}
 	
@@ -372,35 +379,48 @@ public class Carrito {
 	}
 	
 	
-	private void setHoraEntrega(LocalDate fecha) throws Exception {	
-		
-		// Se verifica que la fecha de entrega sea el mismo dia del carrito o despues.
-		if( entrega.getFecha().isAfter(fecha) || entrega.getFecha().equals(fecha) ) {
-			
-			List <LocalTime> horariosDisponibles = this.comercio.traerHoraRetiro(entrega.getFecha());
-			
-			//Generamos un numero random de posicion de la lista para asignarlo como hora de retiro
-			
-			int numeroPosRandom = (int)(Math.random()*( horariosDisponibles.size() - 1) );
-			
-			if(((RetiroLocal) entrega).getHoraEntrega() == null)
-				((RetiroLocal) entrega).setHoraEntrega(horariosDisponibles.get(numeroPosRandom));
-		}
-		else {
+	private void setHoraEntrega(LocalDate fechaDeEntrega) throws Exception {	
+		// Se verifica que la fecha de entrega no sea incorrecta, tiene que ser el mismo dia del carrito o despues.
+		if( !(fechaDeEntrega.isAfter(this.fecha) || fechaDeEntrega.equals(this.fecha)) ) 
 			throw new Exception("ERROR. La fecha de entrega no puede ser anterior a la fecha de compra del carrito.");
+		
+		List <LocalTime> horariosDisponibles = this.comercio.traerHoraRetiro(fechaDeEntrega);
+		LocalTime horaRetiro = null;
+		
+		//Generamos un numero random de posicion de la lista para asignarlo como hora de retiro
+		int numeroPosRandom = (int)(Math.random()*( horariosDisponibles.size() - 1) );
+		
+		if(((RetiroLocal) entrega).getHoraEntrega() == null) {
+			horaRetiro = horariosDisponibles.get(numeroPosRandom);
+			// Si la fecha de carrito es igual que la de entrega y la hora de retiro asignada es ANTES
+			// que la del inicio del carrito hay que modificarlo.
+			if (this.fecha.equals(fechaDeEntrega)) {
+				if(this.hora.isAfter(horaRetiro)) // Le asingo la ultima hora de retiro del dia.
+					horaRetiro = horariosDisponibles.get(horariosDisponibles.size() - 1);
+				if (horaRetiro.isBefore(this.hora)) { 
+					// Si aun asi la ultima hora del dia es ANTES que la fecha del carrito hay que asignar el retiro para el dia siguiente
+					fechaDeEntrega = fechaDeEntrega.plusDays(1);
+					fechaDeEntrega = comercio.verificarFechaDiaRetiro(fechaDeEntrega);
+					horariosDisponibles = this.comercio.traerHoraRetiro(fechaDeEntrega);
+					numeroPosRandom = (int)(Math.random()*( horariosDisponibles.size() - 1) );
+					horaRetiro = horariosDisponibles.get(numeroPosRandom);
+					entrega.setFecha(fechaDeEntrega);
+				}
+			}
 		}
+			((RetiroLocal) entrega).setHoraEntrega(horaRetiro);
 	}
+
 	
 	private double setCostoEntrega() throws Exception {
 		double costo = 0;
 		// Se verifica que la fecha de entrega sea el mismo dia del carrito o despues.
-		if( entrega.getFecha().isAfter(fecha) || entrega.getFecha().equals(fecha) ) {
-			((Envio) entrega).setCosto(comercio.getContacto().getUbicacion(),comercio.getCostoFijo(),comercio.getCostoPorKm());
-			costo = ((Envio) entrega).getCosto();
-		}
-		else {
+		if( !(entrega.getFecha().isAfter(this.fecha) || entrega.getFecha().equals(this.fecha) )) 
 			throw new Exception("ERROR. La fecha de entrega no puede ser anterior a la fecha de compra del carrito.");
-		}
+		
+		((Envio) entrega).setCosto(comercio.getContacto().getUbicacion(),comercio.getCostoFijo(),comercio.getCostoPorKm());
+		costo = ((Envio) entrega).getCosto();
+
 		return costo;
 	}
 }
