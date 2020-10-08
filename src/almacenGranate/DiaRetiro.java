@@ -31,12 +31,10 @@ public class DiaRetiro {
 	}
 
 	public void setDiaSemana(int diaSemana) throws Exception {
-		if( 0 > diaSemana && diaSemana > 8) {
-			this.diaSemana = 1;
+		if( (0 < diaSemana) && (diaSemana < 8) ) 
+			this.diaSemana = diaSemana;
+		else
 			throw new Exception ("ERROR. Dia de semana invalido");
-		}
-		
-		this.diaSemana = diaSemana;
 	}
 
 	public LocalTime getHoraDesde() {

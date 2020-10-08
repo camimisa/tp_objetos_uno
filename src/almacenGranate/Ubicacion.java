@@ -30,5 +30,10 @@ public class Ubicacion {
 	public String toString() {
 		return "latitud: " + latitud + ", longitud: " + longitud;
 	}
-
+	
+	public boolean equals(Ubicacion ubicacion) {
+		if ((ubicacion.getLatitud() == this.latitud) && (ubicacion.getLongitud() == this.longitud))
+			return true;
+		return false;
+	}
 }
